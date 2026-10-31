@@ -105,10 +105,16 @@ LABELS = [
     dict(block="hud", at=0x86, tiles=16, cols=8, clear=[(0, 0, 62, 6, 13), (0, 8, 62, 14, 8)], fill=15,
          outline=None, area=(0, 0, 62, 14), text=[("Demon List", 31, 0), ("Demiloc", 31, 8)]),
     # stage HUD labels (OBJ pal 6/7, 32x8 sprites, the count follows at x + 32): white (15) with a black (11) ring
-] + [dict(block="hud", at=at, tiles=n, cols=n, clear=[(0, 0, n * 8 - 1, 7, 0)], font="tiny", fill=15, outline=11,
+] + [dict(block=b, at=at, tiles=n, cols=n, clear=[(0, 0, n * 8 - 1, 7, 0)], font="tiny", fill=15, outline=11,
           area=(0, 0, n * 8 - 1, 7), text=[(s, n * 4 - 1, 1)])
-     for at, n, s in [(0xBB, 4, "MOVES"), (0xBF, 4, "TIME"), (0xC3, 4, "LIFE"), (0xC7, 8, "DEFEATED"),
-                      (0xCF, 4, "EGGS")]]
+     for b, at, n, s in [("hud", 0xBB, 4, "MOVES"), ("hud", 0xBF, 4, "TIME"), ("hud", 0xC3, 4, "LIFE"),
+                         ("hud", 0xC7, 8, "DEFEATED"), ("hud", 0xCF, 4, "EGGS"),
+                         # puzzle mode HUD: さいこう (best score), タイム, てかず
+                         ("hud_puzzle", 0, 4, "BEST"), ("hud_puzzle", 4, 4, "TIME"), ("hud_puzzle", 8, 4, "MOVES"),
+                         # the OBJ set puzzle mode loads (LZ 0x219630, whole block at OBJ VRAM 0x10000)
+                         ("hud_puzzle_obj", 0xA0, 4, "MOVES"), ("hud_puzzle_obj", 0xA4, 4, "TIME"),
+                         ("hud_puzzle_obj", 0xA8, 4, "LIFE"), ("hud_puzzle_obj", 0xAC, 4, "BEST"),
+                         ("hud_puzzle_obj", 0xB0, 4, "SCORE")]]
 
 
 def edit(lab, data, font):

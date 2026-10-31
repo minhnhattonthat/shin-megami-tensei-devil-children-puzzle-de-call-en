@@ -50,7 +50,7 @@ RECORDS = {
 LZ = {
     "font": 0x160698, "font_small": 0x161FD0, "client_font_small": 0x337B10, "client_font_bold": 0x33A2DC,
     "title_logo": 0x232A68, "title_menu": 0x23AEDC, "title_sub": 0x23B1D8, "title_sub_hi": 0x23B4AC,
-    "title_emblem": 0x23B9A4, "hud": 0x1C72B8, "hud_puzzle": 0x2AADE0, "puzzle_select": 0x2A8970,
+    "title_emblem": 0x23B9A4, "hud": 0x1C72B8, "hud_puzzle": 0x2AADE0, "hud_puzzle_obj": 0x219630, "puzzle_select": 0x2A8970,
     "puzzle_select2": 0x2AB324, "race": 0x2AB930, "devidas_a": 0x28C998, "devidas_b": 0x2A1658,
     "devidas_c": 0x28BD70, "charselect": 0x22E6D0, "outlined_kata": 0x1C810C, "gameover": 0x201EB8,
     "devidas_labels": 0x28C448, "devidas_elements": 0x28C330, "devidas_values": 0x28BFB4,
