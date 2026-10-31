@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 LOW = ("　０１２３４５６７８９、。平．・"            # 00-0F
-       "雪回？！＿ー／～向（）押動方右泉"            # 10-1F
+       "雪回？！＿ー／～向（）押動方石泉"            # 10-1F
        "一小村強力魔気見悪会中世界手助先"            # 20-2F
        "行森礼作出氷地下牢目家広草原人知"            # 30-3F
        "今火山道大樹海本体勝話考元全以上"            # 40-4F
@@ -16,8 +16,9 @@ LOW = ("　０１２３４５６７８９、。平．・"            # 00-0F
 # hiragana from 0x54; the small ぃぅぇぉ slots hold the GBA button letters A B L R; no ゐ ゑ
 HIRA = ("ぁあＡいＢうＬえＲおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷ"
         "へべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわをん")
+# 0xF2 is 口 (出口), not ヮ: the font has no ヮ
 KATA = ("ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプ"
-        "ヘベペホボポマミムメモャヤュユョヨラリルレロヮワヲンヴ穴")
+        "ヘベペホボポマミムメモャヤュユョヨラリルレロ口ワヲンヴ穴")
 
 # FF xx commands: name and argument byte count (from the interpreter at 0801B338; docs/re/text.md)
 CMDS = {0x00: ("end", 0), 0x01: ("n", 0), 0x02: ("c02", 1), 0x03: ("wait", 1), 0x04: ("clr", 0),
