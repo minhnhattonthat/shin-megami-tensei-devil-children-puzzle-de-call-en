@@ -49,8 +49,15 @@ def test_client_block_cannot_leave_image(orig):
 def test_edited_lz_roundtrips(orig):
     data, md, end = blocks.unpack_lz(orig, "title_menu")
     rom = blocks.Rom(orig)
-    with pytest.raises(ValueError):  # grown past its slot: must refuse, not overwrite the next block
-        blocks.pack_lz(rom, "title_menu", bytes(b ^ 0x11 for b in data[:64]) + data[64:], md, end)
+    # grown past its slot: moves to word-aligned free space, every literal pointer follows, the old slot is untouched
+    grown = bytes(b ^ 0x11 for b in data[:64]) + data[64:]
+    blocks.pack_lz(rom, "title_menu", grown, md, end)
+    refs = blocks.lz_xrefs(orig, blocks.LZ["title_menu"])
+    new = struct.unpack_from("<I", rom.out, refs[0])[0] - blocks.ROM_BASE
+    assert refs and new % 4 == 0 and new >= blocks.FREE[0] and lz77.decompress(bytes(rom.out), new)[0] == grown
+    assert all(struct.unpack_from("<I", rom.out, r)[0] == new + blocks.ROM_BASE for r in refs)
+    assert rom.out[blocks.LZ["title_menu"]:end] == orig[blocks.LZ["title_menu"]:end]
+    rom = blocks.Rom(orig)
     edited = bytes(64) + data[64:]
     blocks.pack_lz(rom, "title_menu", edited, md, end)
     assert lz77.decompress(bytes(rom.out), blocks.LZ["title_menu"])[0] == edited

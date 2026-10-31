@@ -206,6 +206,25 @@ def pack_lz(rom, name, data, min_disp, end):
     off = LZ[name]
     blob = lz77.compress(data, min_disp)
     room = (end - off + 3) & ~3
-    if len(blob) > room:
-        raise ValueError(f"{name}: {len(blob)} bytes > slot {room}; relocate it (repoint its xrefs)")
+    if len(blob) > room:  # grown (redrawn graphics): move it to free space, repoint every literal word naming it
+        refs = lz_xrefs(rom.orig, off)
+        if not refs:
+            raise ValueError(f"{name}: {len(blob)} bytes > slot {room} and no literal pointer to repoint")
+        rom.free = (rom.free + 3) & ~3  # the BIOS LZ77 source must be word aligned
+        new = rom.alloc(len(blob), name)
+        rom.put(new, blob, name)
+        for r in refs:
+            rom.put(r, struct.pack("<I", ROM_BASE + new), f"{name} ptr")
+        return
     rom.put(off, blob, name)
+
+
+def lz_xrefs(d, off):
+    """4-aligned words equal to the block's ROM address (literal pools)."""
+    w, out, i = struct.pack("<I", ROM_BASE + off), [], -4
+    while (i := d.find(w, i + 4)) >= 0:
+        if i % 4 == 0:
+            out.append(i)
+        else:
+            i = i - i % 4
+    return out

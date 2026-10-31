@@ -104,7 +104,11 @@ LABELS = [
     # pause panel headers (OBJ pal 6, 64x8 strips of 32x8 sprites): white text on orange (13) / grey (8), rows 0-6
     dict(block="hud", at=0x86, tiles=16, cols=8, clear=[(0, 0, 62, 6, 13), (0, 8, 62, 14, 8)], fill=15,
          outline=None, area=(0, 0, 62, 14), text=[("Demon List", 31, 0), ("Demiloc", 31, 8)]),
-]
+    # stage HUD labels (OBJ pal 6/7, 32x8 sprites, the count follows at x + 32): white (15) with a black (11) ring
+] + [dict(block="hud", at=at, tiles=n, cols=n, clear=[(0, 0, n * 8 - 1, 7, 0)], font="tiny", fill=15, outline=11,
+          area=(0, 0, n * 8 - 1, 7), text=[(s, n * 4 - 1, 1)])
+     for at, n, s in [(0xBB, 4, "MOVES"), (0xBF, 4, "TIME"), (0xC3, 4, "LIFE"), (0xC7, 8, "DEFEATED"),
+                      (0xCF, 4, "EGGS")]]
 
 
 def edit(lab, data, font):

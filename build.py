@@ -51,6 +51,7 @@ def allowed(orig, used_free):
     out = [(blocks.PACKED[n][2], blocks.PACKED[n][0] + 4 * blocks.PACKED[n][1], n) for n in blocks.PACKED]
     out += [(s, s + c * z, n) for n, (s, c, z) in blocks.RECORDS.items()]
     out += [(o, o + ((blocks.unpack_lz(orig, n)[2] - o + 3) & ~3), n) for n, o in blocks.LZ.items()]
+    out += [(r, r + 4, n + " ptr") for n, o in blocks.LZ.items() for r in blocks.lz_xrefs(orig, o)]  # moved LZ
     out += [(blocks.FREE[0], used_free, "free space"), (asm.ENGINE, asm.END, "engine")]
     out += [r for s, lit in asm.NAME_SITES for r in ((s, s + 2, "names x16"), (lit, lit + 4, "names ptr"))]
     out += [(asm.NAME_162, asm.NAME_162 + 4, "name 162 ptr")]
