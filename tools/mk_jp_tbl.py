@@ -46,5 +46,5 @@ def lines():
 
 if __name__ == "__main__":
     (ROOT / "tbl").mkdir(exist_ok=True)
-    (ROOT / "tbl" / "jp.tbl").write_text("\n".join(lines()) + "\n", encoding="utf-8")
+    (ROOT / "tbl" / "jp.tbl").write_text("\n".join(lines()) + "\n", encoding="utf-8", newline="\n")
     print("tbl/jp.tbl:", len(chars()), "glyphs,", len(CMDS) + 1, "commands")
