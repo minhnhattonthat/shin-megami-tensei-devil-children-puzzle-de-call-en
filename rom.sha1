@@ -1,2 +1,2 @@
-# SHA-1 of the supported dump, in sha1sum format (`sha1sum -c rom.sha1` works too). One line per file for discs.
-<sha1>  rom/<file>
+# SHA-1 of the supported dump, in sha1sum format (`sha1sum -c rom.sha1` works too).
+e70fc457b56c8e27ab63e491706b88232f598452  rom/Shin Megami Tensei Devil Children - Puzzle de Call! (Japan).gba
