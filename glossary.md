@@ -246,5 +246,8 @@ case-insensitive) must appear in the English, and nothing from Avoid may.
   （ボタンを押せばちゅうし） -> (Press a button to skip)
 - b008 ケツアルコアトル (variant spelling in rescue.066) -> Quetza, same demon as ケツアルカトル
 - b008 コンゴトモヨロシク -> "I look forward to our time together..."
-- b010 pause menu: Cancel, Undo, Map, Demiloc, Retry, Restart, Quit, Save; title: Start, Load, Quit
+- b010 pause menu: Back (キャンセル), Undo, Map, Demiloc, Retry, Stage 1 (はじめから), Quit, Save; title: Start, Load,
+  Quit. Same labels in client_pause.
+- Boss names (Ozemos, Crosel, Grimlee, Bifronz, Kyme) and odd-looking demon names (Ankuu, Gembu, Bibisana, Vrtra,
+  Shadomas, Ironhoof, Whiskers...) are the official DemiKids forms (megatenwiki list checked 2026-11-01): keep them.
 - b011 ending: おわり -> The End (centred by hand, raw `=` units)

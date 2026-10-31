@@ -137,15 +137,38 @@ def _cls(ch):
     return "o"
 
 
-def has_term(jp, term):
-    """term in jp as a whole run: the neighbours are not of the same script as the term's ends (ミン not in タイミング)."""
+def term_ends(jp, term):
+    """End offsets (in jp without codes) of term as a whole run: the neighbours are not of the same script as the
+    term's ends (ミン not in タイミング)."""
     s = text_len(jp)
     for m in re.finditer(re.escape(term), s):
         a, b = m.start(), m.end()
         if (a == 0 or _cls(s[a - 1]) != _cls(term[0]) or _cls(term[0]) == "o") and \
            (b == len(s) or _cls(s[b]) != _cls(term[-1]) or _cls(term[-1]) == "o"):
-            return True
-    return False
+            yield s, b
+
+
+def has_term(jp, term):
+    return any(True for _ in term_ends(jp, term))
+
+
+HONOR = {"さま": "sama", "サマ": "sama", "様": "sama", "ちゃん": "chan", "チャン": "chan", "さん": "san", "サン": "san",
+         "くん": "kun", "クン": "kun"}
+# translator brief: カミさま = God, オレさま = "the great me", ごくろうさま / おつかれさま = stock thanks: not honorifics
+NOT_HONOR = {"カミ", "かみ", "オレ", "おれ", "ごくろう", "おつかれ", "キ"}
+
+
+def honorifics(jp, term):
+    """Romanised honorifics glued to glossary term in jp (オーディンさま -> {'sama'})."""
+    if term in NOT_HONOR:
+        return set()
+    return {r for s, b in term_ends(jp, term) for h, r in HONOR.items() if s.startswith(h, b)}
+
+
+def has_en(words, form):
+    """English form as whole words, case-insensitive; an -s/-es/-ed/-ing ending or possessive may follow (Jin's,
+    controlled; Jinx no)."""
+    return re.search(r"(?<![A-Za-z])" + re.escape(form) + r"(?:e?s|l?ed|l?ing)?(?![A-Za-z])", words, re.I) is not None
 
 
 # ---- rendering ------------------------------------------------------------------------------------------------
@@ -184,31 +207,41 @@ def wrap(page, first=224, last=210):
     return out
 
 
+def page_problems(k, lines, cd):
+    """Limits of one big-font page: 2 lines, 224 px (the last 210: the page arrow), msg sprite cap."""
+    probs = []
+    if len(lines) > LINES_PER_PAGE:
+        probs.append(f"page {k + 1} needs {len(lines)} lines (max 2 per page): add a ' // ' page break or "
+                     f"rephrase: {' | '.join(lines)}")
+    for i, ln in enumerate(lines):
+        lim = 210 if i == len(lines) - 1 else 224
+        if px(ln) > lim:
+            probs.append(f"page {k + 1} line {i + 1} is {px(ln)} px > {lim}: {ln!r}")
+    if cd in ("msg", "tutorial"):
+        spr = sum(math.ceil(px(seg) / 16) for ln in lines for seg in COL.split(ln)[::2] if seg)
+        if spr > SPRITES:
+            probs.append(f"page {k + 1} uses {spr} sprites > {SPRITES} (colour runs): fewer colour changes")
+    return probs
+
+
 def render(name, src, jp):
     """(en with codes, problems) for authored English src of a unit whose Japanese is jp."""
     probs = []
-    if src.startswith("="):
-        en = src[1:]
-        return en, probs
     cd = codec(name)
     font, budget, _, _, _ = blocks.BUDGET[name]
+    if src.startswith("="):  # hand-laid: same page / width / sprite limits on the lines as written
+        en = src[1:]
+        if font == "big":
+            for k, page in enumerate(en.split(PAGE[cd])):
+                probs += page_problems(k, page.split("{n}"), cd)
+        return en, probs
     if font != "big":
         return src, probs
     col = line_colour(jp, cd)
     pages = []
     for k, page in enumerate(re.split(r"\s*//\s*", src.strip())):
         lines = wrap(page)
-        if len(lines) > LINES_PER_PAGE:
-            probs.append(f"page {k + 1} needs {len(lines)} lines (max 2 per page): add a ' // ' page break or "
-                         f"rephrase: {' | '.join(lines)}")
-        for i, ln in enumerate(lines):
-            lim = 210 if i == len(lines) - 1 else 224
-            if px(ln) > lim:
-                probs.append(f"page {k + 1} line {i + 1} is {px(ln)} px > {lim}: {ln!r}")
-        if cd in ("msg", "tutorial"):
-            spr = sum(math.ceil(px(seg) / 16) for ln in lines for seg in COL.split(ln)[::2] if seg)
-            if spr > SPRITES:
-                probs.append(f"page {k + 1} uses {spr} sprites > {SPRITES} (colour runs): fewer colour changes")
+        probs += page_problems(k, lines, cd)
         if col:
             lines = ["{col:%s}%s" % (col, ln) for ln in lines]
         pages.append("{n}".join(lines))
@@ -259,10 +292,13 @@ def problems(name, e, src):
     words = " ".join(CODE.sub("", s) for s in re.split(r"\{n\}|" + "|".join(map(re.escape, PAGE.values())), en))
     words = re.sub(r"\s+", " ", words)  # a term the wrap split over two lines still counts
     for term, ens, avoid in glossary():
-        if has_term(jp, term) and ens and not any(a.lower() in words.lower() for a in ens):
+        if has_term(jp, term) and ens and not any(has_en(words, a) for a in ens):
             out.append(f"glossary: {term} -> {' or '.join(ens)} missing")
+        for h in sorted(honorifics(jp, term)):
+            if ens and not any(has_en(words, f"{a}-{h}") for a in ens):
+                out.append(f"honorific: {term}{h} -> {ens[0]}-{h} missing (glossary: honorifics kept, hyphenated)")
         for a in avoid:
-            if re.search(r"\b" + re.escape(a) + r"\b", words):
+            if has_en(words, a):
                 out.append(f"glossary: avoid {a!r}")
     return out
 

@@ -25,5 +25,29 @@ def test_whole_run_terms():
     assert batches.has_term("デビルたち", "デビル") and not batches.has_term("デビルチルドレン", "デビル")
 
 
+def test_raw_layout_gated():
+    b, e = batches.by_id()["story.014.32"]
+    assert any("px" in p for p in batches.problems(b, e, "=" + "W" * 200))
+    assert any("lines" in p for p in batches.problems(b, e, "=one{n}two{n}three"))
+    assert not batches.problems(b, e, e["src"])
+
+
+def test_honorifics():
+    b, e = batches.by_id()["rescue.068.00"]
+    assert any("honorific" in p for p in batches.problems(b, e, "Please save Odin. // Search here again later."))
+    assert not batches.problems(b, e, "Please save Odin-sama. // Search here again later.")
+    b, e = batches.by_id()["rescue.028.00"]
+    assert any("honorific" in p for p in batches.problems(b, e, "Huh, Tsunami hasn't been saved yet? // Later."))
+    assert not batches.honorifics("カミさまはみてる", "カミ") and not batches.honorifics("オレさま", "オレ")
+    assert batches.honorifics("オーディンさまを", "オーディン") == {"sama"}
+
+
+def test_glossary_whole_words():
+    b, e = batches.by_id()["story.005.01"]
+    assert any("Jin" in p for p in batches.problems(b, e, "Jinx! Hey, it is Jinx!!"))
+    assert not any("glossary" in p for p in batches.problems(b, e, "Jin! Hey, it's Jin's voice!!"))
+    assert batches.has_en("the Rando kid", "rando") and not batches.has_en("Randolph", "Rand")
+
+
 def test_lint_merged():
     assert batches.lint() == []

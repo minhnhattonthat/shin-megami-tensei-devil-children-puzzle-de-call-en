@@ -76,7 +76,8 @@ Sources: reviewer reports per batch (`work/tl/reviews.md`).
 - [ ] rescue.085 - "I will permit you to form a contract with me."
 - [ ] rescue.093 - "But really... an amazing guy."
 - [ ] rescue.094 - "gufufufu" -> "Heh heh heh..."
-- [ ] rescue.095 - katakana formal line: clip it ("Clearing this place... You are quite capable.")
+- [x] rescue.095 - katakana voice lost (Important, phase 6 review): now "You... clear this place... Impressive. //
+  Your power... I recognize it."
 - [ ] tutorial.000.02 - Rand "gonna" -> "I'll teach you"
 - [ ] tutorial.000.34 - クセモノ -> "a bit of a tricky customer" (optional)
 - [ ] tutorial.000.35/36/064 - ジク "axis" -> "pivot"

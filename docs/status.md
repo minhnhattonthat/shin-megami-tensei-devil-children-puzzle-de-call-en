@@ -4,7 +4,9 @@ Updated at the end of every session. Keep it to what the next session needs; his
 
 - **Phase:** phase 7 (insert, fit, check) done 2026-11-01; next is phase 8 (QA in the emulator). All 837 text units
   translated (`script/*.json`: `src` = authored English, `en` = rendered with codes), batch check 0 errors,
-  reviewer pass on every batch with every Critical/Important fixed (`work/tl/reviews.md`), Minors in `docs/polish.md`.
+  reviewer pass on every batch b001-b011 with every Critical/Important fixed (`docs/reviews.md`, incl. the external
+  phase 6 review fixes: raw-unit gate, honorific check, whole-word glossary match, rescue.095), Minors in
+  `docs/polish.md`.
 - **Done:**
   - Step 0: template, MesenCE 2.2.1 + GBA BIOS in `tools/mesen/`, guard hook proven, pre-commit runs `tools/check.py`,
     `rom.sha1` pinned, original ROM smoke-boots.
