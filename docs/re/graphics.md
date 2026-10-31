@@ -53,7 +53,10 @@ found in the static sweep, on-screen location not yet seen.
 | Story submenu, no save / with save (composed at run time from 8 px strips of these) | title_sub 0x23B1D8, title_sub_hi 0x23B4AC | NEW GAME, (CONTINUE), TUTORIAL |
 | Pause list headers (64x8 strips, OBJ pal 6) | hud 0x1C72B8 tiles 0x86-0x95 | Demon List, Demiloc |
 | Stage HUD labels (32x8 OBJ) | hud tiles 0xBB 0xBF 0xC3 0xC7(64 px) 0xCF | MOVES TIME LIFE DEFEATED EGGS (fonts/tiny.txt) |
-| Puzzle HUD labels | hud_puzzle 0x2AADE0 (3 x 32x8), hud_puzzle_obj 0x219630 tiles 0xA0-0xB3 (the set puzzle mode loads) | BEST TIME MOVES; MOVES TIME LIFE BEST SCORE |
+| Puzzle HUD labels | hud_puzzle_obj 0x219630 tiles 0xA0-0xB3 (the set puzzle mode loads) | MOVES TIME LIFE BEST SCORE |
+| Puzzle select record (3 x 32x8) | raw 0x2AAEB0 (0x180 bytes, literal 0801F5A4; `blocks.RAW`). Its LZ twin 0x2AADE0 has no pointer: left JP | SCORE TIME MOVES |
+| Start! / Clear!! call-outs (64x16 = two 32x16 OBJ, white 1, ring 7) | hud tiles 0x68 / 0x58, hud_puzzle_obj 0x24 / 0x14, outlined_kata tile 0x200 (Clear!!) | Start!, Clear!! |
+| Puzzle stage card (64x16 each) | hud_puzzle_obj 0xC2 / 0xD2 / 0xE2 (difficulty plates, stripes 11 / 6), 0xF2 (ステージ; digit sprites 0x102+ kept) | Easy, Normal, Hard, Stage |
 | Area start cards (128x16) | outlined_kata 0x1C810C at 0x2800 + i * 0x400 | Embel Spring, Lucoppia Plain, Plekt Volcano, Tartarus Sea of Trees, Fjorgyn Snowfield, Quadriga (VWF font) |
 The hud and hud_puzzle_obj blocks grow when recompressed: they move to free space (`blocks.pack_lz`, literal xrefs).
 
@@ -63,7 +66,9 @@ The hud and hud_puzzle_obj blocks grow when recompressed: they move to free spac
 (pointer table 0x081C93D0, index area_map 0x081FF868). Redrawn by `gfx.cards` (CARDS): the empty banner is the
 per-pixel majority of the six originals away from the lettering, English in fonts/vwf.txt, white 15 with ring 6.
 Names from the JP atwiki (devilchildren_pdc), glossary.md Places. Checked in game: `work/qa/cards/_finals`.
-No スタート! sprite seen with the card.
+スタート! shows ~2 s after the card: hud tiles 0x68-0x77 (table above). Checked in game: `work/qa/g18`.
+The six area_N plates (0x28A59C...) load into OBJ VRAM in every story scene (loop at 0801A760) but no visible sprite
+used them in the 32 story / ending warp dumps, and none showed in the story_02 tour frames: left JP (unconfirmed).
 
 ## Not checked / weak spots (do in phase 2 / 8 with the debug tool)
 - Phase 2 (2026-11-01): every screen below is now a warp scene (`tools/debug/scenes.txt`), VRAM dumps from

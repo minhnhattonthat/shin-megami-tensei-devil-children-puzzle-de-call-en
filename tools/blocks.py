@@ -58,6 +58,9 @@ LZ = {
     "area_6": 0x28AED8, "bold_kana": 0x28C50C, "bold_kana2": 0x2B13E4, "client_bold_kana": 0x33BB88,
     "banner_1": 0x22C408, "banner_2": 0x22CD60, "banner_3": 0x22D578, "banner_4": 0x22DE80,
 }
+# uncompressed graphics: name -> (offset, size). hud_puzzle_raw = the copy of hud_puzzle the puzzle select reads
+# (literal at 0801F5A4; the LZ copy at 0x2AADE0 has no pointer)
+RAW = {"hud_puzzle_raw": (0x2AAEB0, 0x180)}
 
 # Text fields inside each record: (size, pad). pad FF: text ends at FF (none when it fills the field), bytes after the
 # FF are stale and kept for unchanged fields. pad 00: fixed-width text padded with fullwidth spaces (00).

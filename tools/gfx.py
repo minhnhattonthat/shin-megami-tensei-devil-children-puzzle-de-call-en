@@ -128,6 +128,23 @@ LABELS = [
     dict(block="devidas_labels", cols=4, clear=[(0, 0, 31, 31, 0)], fill=1, outline=None, left=True,
          area=(0, 0, 31, 31), text=[("Class", 0, 0), ("Type", 0, 10), ("Align", 0, 21)]),
 ] + [
+    # floor start / clear call-outs: 64x16 as two 32x16 OBJ (white 1, ring 7); copies in the story HUD set, the
+    # puzzle-mode OBJ set and the tail of outlined_kata
+    dict(block=b, at=at, tiles=16, cols=4, sprites=2, clear=[(0, 0, 63, 15, 0)], font="vwf", bold=True, fill=1,
+         outline=7, area=(0, 0, 63, 15), text=[(s, 32, 3)])
+    for b, at, s in [("hud", 0x58, "Clear!!"), ("hud", 0x68, "Start!"), ("hud_puzzle_obj", 0x14, "Clear!!"),
+                     ("hud_puzzle_obj", 0x24, "Start!"), ("outlined_kata", 0x200, "Clear!!")]
+] + [
+    # puzzle stage card (hud_puzzle_obj, 64x16 each): difficulty plate (white 15 on stripes 11 / 6, rows 2-13)
+    dict(block="hud_puzzle_obj", at=at, tiles=16, cols=4, sprites=2, font="vwf", bold=True, fill=15, outline=None,
+         clear=[(5, y, 55, y, 11 if y % 2 == 0 else 6) for y in range(2, 14)], area=(5, 2, 55, 13),
+         text=[(s, 31, 3)])
+    for at, s in [(0xC2, "Easy"), (0xD2, "Normal"), (0xE2, "Hard")]
+] + [
+    # "ステージ" before the stage number sprite (drawn at x + 60): white 15, ring 6, on 0
+    dict(block="hud_puzzle_obj", at=0xF2, tiles=16, cols=4, sprites=2, clear=[(0, 0, 63, 15, 0)], font="vwf",
+         bold=True, fill=15, outline=6, area=(0, 0, 63, 15), text=[("Stage", 38, 3)]),
+] + [
     # class / type values: 32x16 sprites (8 tiles each), white 1 + shadow 11, left aligned; 5-row caps (GENERAL,
     # THUNDER: 30 px + shadow)
     dict(block="devidas_values", at=8 * k, tiles=8, cols=4, clear=[(0, 0, 31, 15, 0)], font="tiny", fill=1,
@@ -156,8 +173,10 @@ LABELS = [
           area=(0, 0, n * 8 - 1, 7), text=[(s, n * 4 - 1, 1)])
      for b, at, n, s in [("hud", 0xBB, 4, "MOVES"), ("hud", 0xBF, 4, "TIME"), ("hud", 0xC3, 4, "LIFE"),
                          ("hud", 0xC7, 8, "DEFEATED"), ("hud", 0xCF, 4, "EGGS"),
-                         # puzzle mode HUD: さいこう (best score), タイム, てかず
-                         ("hud_puzzle", 0, 4, "BEST"), ("hud_puzzle", 4, 4, "TIME"), ("hud_puzzle", 8, 4, "MOVES"),
+                         # puzzle select record: スコア タイム てかず. Only the raw copy is read (the LZ copy
+                         # hud_puzzle 0x2AADE0 has no pointer and no room for SCORE: left as is)
+                         ("hud_puzzle_raw", 0, 4, "SCORE"), ("hud_puzzle_raw", 4, 4, "TIME"),
+                         ("hud_puzzle_raw", 8, 4, "MOVES"),
                          # the OBJ set puzzle mode loads (LZ 0x219630, whole block at OBJ VRAM 0x10000)
                          ("hud_puzzle_obj", 0xA0, 4, "MOVES"), ("hud_puzzle_obj", 0xA4, 4, "TIME"),
                          ("hud_puzzle_obj", 0xA8, 4, "LIFE"), ("hud_puzzle_obj", 0xAC, 4, "BEST"),
