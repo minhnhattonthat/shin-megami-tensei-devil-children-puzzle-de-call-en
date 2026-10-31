@@ -1,0 +1,3 @@
+# No extracted text is intentionally untranslated.
+# Exceptions require one unit id, a TAB, and a reason per line.
+# The Japanese title logo is a graphics exception (decision D5), not an extracted unit.

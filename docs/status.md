@@ -8,6 +8,9 @@ Updated at the end of every session. Keep it to what the next session needs; his
   phase 6 review fixes: raw-unit gate, honorific check, whole-word glossary match, rescue.095), Minors in
   `docs/polish.md`.
 - **Done:**
+  - Phase 7 external review Important #1 fixed: actual `en` validated without `src`; final-build coverage includes
+    every non-empty original name/record/string, with an empty committed reasoned keep-list and explicit test modes.
+    Regression checks cover missing sources, empty translations, direct-English overflow and incomplete name maps.
   - Step 0: template, MesenCE 2.2.1 + GBA BIOS in `tools/mesen/`, guard hook proven, pre-commit runs `tools/check.py`,
     `rom.sha1` pinned, original ROM smoke-boots.
   - Phase 1 (docs/re/text.md, docs/re/graphics.md): encoding + `tbl/jp.tbl`, fonts (LZ 0x160698 big, 0x161FD0 small),

@@ -56,3 +56,19 @@ def test_glossary_whole_words():
 
 def test_lint_merged():
     assert batches.lint() == []
+
+
+def test_direct_en_is_gated(monkeypatch):
+    b, original = batches.by_id()["names.000"]
+    for value, expected in [("W" * 15, "px"), ("", "missing English"), ("Wrong", "glossary")]:
+        entry = dict(original, en=value)
+        entry.pop("src", None)
+        monkeypatch.setattr(batches, "entries", lambda: [(b, entry)])
+        assert any(expected in p for p in batches.lint())
+
+
+def test_missing_record_and_empty_original(monkeypatch):
+    monkeypatch.setattr(batches, "entries", lambda: [("trade", {"id": "trade.test", "jp": "テスト", "en": ""})])
+    assert any("missing English" in p for p in batches.lint())
+    monkeypatch.setattr(batches, "entries", lambda: [("trade", {"id": "trade.empty", "jp": "", "en": ""})])
+    assert batches.lint() == []

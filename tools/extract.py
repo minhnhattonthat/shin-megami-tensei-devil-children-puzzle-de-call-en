@@ -73,6 +73,19 @@ def en_map():
     return out
 
 
+def keep_jp():
+    """Explicit untranslated exceptions, each with a reviewable reason."""
+    kept = {}
+    for line in (SCRIPT / "keep_jp.txt").read_text(encoding="utf-8").splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        uid, sep, reason = line.partition("\t")
+        if not sep or not reason.strip() or uid in kept:
+            raise ValueError(f"invalid keep_jp entry: {line!r}")
+        kept[uid] = reason
+    return kept
+
+
 def main():
     check_rom.check()
     SCRIPT.mkdir(exist_ok=True)

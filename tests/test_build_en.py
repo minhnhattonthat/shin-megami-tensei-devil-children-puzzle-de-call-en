@@ -37,6 +37,15 @@ def test_verify_clean(orig, rom, en):
     assert build.verify(orig, rom, en) == []
 
 
+def test_final_requires_all_translations(orig, rom, en):
+    incomplete = {uid: value for uid, value in en.items() if uid != "names.000"}
+    assert "names.000: missing English translation" in build.verify(orig, rom, incomplete)
+    empty = dict(en, **{"names.000": ""})
+    assert "names.000: missing English translation" in build.verify(orig, rom, empty)
+    assert any("missing English" in p for p in build.verify(orig, blocks.Rom(orig), {}))
+    assert build.verify(orig, blocks.Rom(orig), {}, mode="identity") == []
+
+
 def test_verify_catches(orig, rom, en):
     bad = blocks.Rom(orig)
     bad.out, bad.writes, bad.free = bytearray(rom.out), list(rom.writes), rom.free

@@ -63,10 +63,20 @@ def allowed(orig, used_free):
     return out
 
 
-def verify(orig, rom, en):
+def verify(orig, rom, en, *, mode="final"):
     """ROM-level checks of a build (docs/re/build.md "Checks"); returns error lines."""
     out = bytes(rom.out)
     errs = romdiff.check(orig, out, set(), rom.writes)[0]  # every changed byte has a logged write, none overwritten
+    if mode not in {"final", "partial", "identity"}:
+        raise ValueError(f"unknown verification mode {mode!r}")
+    if mode == "final":
+        units = {e["id"]: e for us in text.units(orig).values() for e in us if "data" not in e}
+        kept = extract.keep_jp()
+        errs += [f"{uid}: missing English translation" for uid, e in units.items()
+                 if e["jp"] and not en.get(uid) and uid not in kept]
+        errs += [f"{uid}: unknown keep_jp id" for uid in kept if uid not in units]
+    elif mode == "identity" and (en or out != orig):
+        errs.append("identity mode requires no translations and byte-identical output")
     ranges = allowed(orig, rom.free)
     for off, _, new, who in rom.writes:
         if not any(lo <= off and off + len(new) <= hi for lo, hi, _ in ranges):
@@ -115,6 +125,10 @@ def main():
     if "--out" in sys.argv:  # another file, e.g. while a QA tour still reads build/pdc_en.gba
         OUT = Path(sys.argv[sys.argv.index("--out") + 1]).resolve()
     check_rom.check()
+    import batches
+    lint = batches.lint()
+    if lint:
+        sys.exit("\n".join(lint))
     en = extract.en_map()
     known = {e["id"] for us in text.units(ROM.read_bytes()).values() for e in us}
     if set(en) - known:

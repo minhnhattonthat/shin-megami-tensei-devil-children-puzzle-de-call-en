@@ -43,6 +43,13 @@ same id keeps `en` and extra keys (a changed `jp` sets `recheck`), vanished ids 
   all inside units, none outside the blocks (one 8bpp-sprite false hit listed in `strayscan.NOISE`).
 
 ## Checks (phase 7, verified 2026-11-01: tests/test_build_en.py)
+Phase 7 review follow-up: lint now checks every actual `en`, independently of optional `src`, and separately
+requires `src` to render back to `en`. Empty original fields are allowed; non-empty originals require English or
+a reasoned ID in `script/keep_jp.txt` (currently no exceptions). Final ROM verification derives coverage from the
+original ROM, including all names and fixed-record fields, so deleting an entry from the English map fails.
+`verify(..., mode="identity")` and `mode="partial"` are explicit test-only alternatives; normal builds use `final`.
+Uniform hint colour codes are checked at each rendered line start, not by the Japanese line count.
+
 `build.verify` runs on every `build.py` (nothing is written when it fails) and in the test, on an in-memory build:
 - `romdiff.check` with the write log (`build/writes.txt`, every write through `blocks.Rom.put`): each write's
   expected original bytes hold, no write overlaps or is overwritten, every changed byte has a write.

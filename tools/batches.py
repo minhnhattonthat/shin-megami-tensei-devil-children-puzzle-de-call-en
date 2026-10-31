@@ -294,6 +294,10 @@ def problems(name, e, src):
     raw, cd = src.startswith("="), codec(name)
     want = codes_of(jp if raw or cd not in PAGE or not line_colour(jp, cd) else COL.sub("", jp))
     have = codes_of(en if raw else src)
+    # A uniformly coloured hint repeats its colour at each rendered line start;
+    # English wrapping can change the line count without changing its colour.
+    if raw and cd in PAGE and line_colour(jp, cd) and line_colour(en, cd) == line_colour(jp, cd):
+        want, have = codes_of(COL.sub("", jp)), codes_of(COL.sub("", en))
     if want != have:
         out.append(f"control codes differ: JP {want} vs EN {have}")
     if re.search(r"\{name\}(st|nd|rd|th)\b", src):
@@ -449,11 +453,15 @@ def rerender():
 
 
 def lint():
-    """Problems of every merged unit (src re-rendered); used by tests/test_batches.py."""
+    """Validate inserted English even without optional authoring source."""
     out = []
     for b, e in entries():
+        en = e.get("en", "")
+        if en:
+            out += [f"{e['id']}: {p}" for p in problems(b, e, "=" + en)]
+        elif e["jp"] and e["id"] not in extract.keep_jp():
+            out.append(f"{e['id']}: missing English translation")
         if "src" in e:
-            out += [f"{e['id']}: {p}" for p in problems(b, e, e["src"])]
             if render(b, e["src"], e["jp"])[0] != e["en"]:
                 out.append(f"{e['id']}: en is not the render of src (re-merge)")
     return out
