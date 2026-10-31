@@ -38,32 +38,23 @@ Updated at the end of every session. Keep it to what the next session needs; his
     (English reuses the kana byte codes); read-back is the text-side leftover check. English tour
     `warp_all.py --rom build/pdc_en.gba --out work/qa/p7`: 78/78 ok (sheets `work/qa/p7/_finals`, no verdicts yet).
     Build sha1 814f33e6..., smoke ok.
-- **Phase 8 in progress (2026-11-01):**
-  - Text tour `tools/qa_tour.py` (story 0-28, boss x12, rescue RESCUE_ID 0-100, tutorial 1-3; warp + A every 120
-    frames, shot before each press + every 30 frames for msg boxes, `tools/debug/pageshots.lua`): cropped 2x sheets
-    in `work/qa/text/_sheets`, gate `work/qa/text/manifest.tsv` + `verdicts/`. Round 1 (`work/qa/text_v1`, old wrap):
-    reviewers flagged only one-word last lines -> `batches.wrap` now splits 2-line segments evenly (0 widows), all
-    units re-rendered (`batches.py rerender`); round 2 tour = current build, needs verdicts (qa_gate todo + visual-qa
-    agents, 25 sheets per chunk).
-  - Graphics text `tools/gfx.py` (LABELS: block / tile range / clear / font / text; `preview OUT.png`; `oam PREFIX
-    DIR` dumps on-screen sprites): done = title menu (STORY PUZZLE RACE DEMONARY), story submenus (NEW GAME /
-    CONTINUE / TUTORIAL, both variants), pause headers (Demon List, Demiloc), stage HUD (MOVES TIME LIFE DEFEATED
-    EGGS, `fonts/tiny.txt` 5-row caps). Grown LZ blocks relocate to free space (word aligned, literal xrefs
-    repointed: `blocks.lz_xrefs`). Rest of docs/re/graphics.md table still Japanese (logo, puzzle/race/DeviDas
-    banners and labels, char select plates, area cards, area banners, puzzle HUD 0x2AADE0, outlined katakana rows).
-  - Puzzle HUD labels done too (0x2AADE0, 0x219630 added to blocks.LZ). Area start card source found: block
-    0x1C810C (outlined_kata) at 0x2800 + idx*0x400, 128x16 = four 32x16 sprites, DMA'd by 0800E632 from its EWRAM
-    copy (docs/re/graphics.md "Area start card"); six cards: エンゼルの泉, ?コッピア平原 (first kana unclear),
-    ?レクトハ山, タルタロスの樹海, フィーヨルグ雪原 (Fjorgyn Snowfield), クァドリガ (Quadriga). Next: read the unclear
-    names zoomed in game, pick English (Angel Spring, ... Plain, Mt. ..., Tartarus Sea of Trees, Fjorgyn Snowfield,
-    Quadriga), redraw with gfx.py (same outlined style), plus the スタート! part.
-  - `build.py --out FILE` builds elsewhere (while a tour reads build/pdc_en.gba).
-  - Text tour round 2 (current wrap; HUD still JP in those shots): 284 sheets, chunks of 30 in
-    `work/qa/text/chunks`, visual-qa agents dispatched per chunk; verdicts in `work/qa/text/verdicts`.
-- **Next (phase 8, QA):** visual-QA verdicts on the English tour sheets (`work/qa/p7/_finals`, `qa_gate.py init` +
-  chunks, fresh read-only pass per chunk since no reviewer agent is started for us), graphics text (docs/re/graphics.md,
-  every row English in a zoomed cold-boot shot), re-time warp scenes if shots catch text mid-print, the in-game checks
-  in the carry-over list, then story pass (`tools/pairs.py --chapters`) and polish pass (`docs/polish.md`).
+- **Phase 8 (QA in the emulator), 2026-11-01:**
+  - Text tour `tools/qa_tour.py` (`--only REGEX --mash N --out DIR --jobs N`; no `--help`: unknown args run the
+    full tour): story 0-28, boss x12, rescue 0-100, tutorial 1-3; cropped 2x sheets + gate (`qa_gate.py`).
+    Round 1-2 (`work/qa/text*`): one-word last lines -> `batches.wrap` splits 2-line segments evenly and prefers a
+    sentence end. Round 4-5 story reshoot `work/qa/text3` (`--mash 97`, 267 sheets, verdicts
+    `work/qa/text3/verdicts/*.tsv`): no text faults; the only issues were pages closed by an A press on their last
+    glyph, rechecked in `work/qa/text4` (`--mash 83`, verdict `r5_reshoot.tsv`). Verdict files must have unique
+    names per round (round 4 overwrote round 3's chunk_00N.tsv; redone as r5_*).
+  - Graphics text `tools/gfx.py` (LABELS; `oam PREFIX DIR` dumps on-screen sprites; `preview` breaks on grid
+    labels): English = title menu, story submenus, pause headers, stage HUD, puzzle HUD + select record (raw copy
+    0x2AAEB0, `blocks.RAW`), area start cards (Embel Spring ... Quadriga, atwiki names), Start! / Clear!!, puzzle
+    stage card (Easy / Normal / Hard, Stage), char select, puzzle select banner + headers, race banner, DeviDas
+    banner / labels / values / elements (official DemiKids terms; element sprite 16x16 -> 32x8 hook 0x1CADA).
+    All checked in game (`work/qa/g14`-`g18`, `work/qa/cards`). Kept JP: title logo (D5: no official English logo),
+    the six area_N plates (loaded, never seen on screen), unreferenced LZ twin 0x2AADE0. Clear!! not seen in game
+    (no reachable floor-clear call-out); same format as Start!, which renders right.
+  - Pause map / Demiloc / save prompt / game over menu: English (`work/qa/g12/_finals`).
 - **Carry-over (non-blocking):**
   - Race menu printer (080205FE) is fixed 8 px cells, English glyphs sit left in their cell (`R0. 0`): proportional
     pen or a centred copy of the font there = phase 7 polish. Race needs a link partner; only the menu is reachable.
@@ -72,7 +63,6 @@ Updated at the end of every session. Keep it to what the next session needs; his
   - Small font `q` looks like `9` (game glyph); redraw if a menu word needs `q`.
   - Multiboot client strings (client_*, trade, transfer) and devidas_menu: link-only, budgets are slot guesses.
   - デビライザー screen not reached (needs a devil in デビルいちらん); つづきから / save-file screens need a .sav fixture.
-  - Graphics text (title plates, banners, list headers, area cards): phase 7/8 (docs/re/graphics.md).
   - Warp scenes are timed for Japanese; marker / English text types slower (ending_r0 needs ~9000 frames to reach
     おわり). Re-time scenes in phase 8 if shots catch text mid-print.
   - In-game checks the reviewers asked for: boss.000 "{name}, let's go!!!" (who is {name}?), rescue.025 (symbols
