@@ -41,3 +41,20 @@ same id keeps `en` and extra keys (a changed `jp` sets `recheck`), vanished ids 
 - **Coverage**: blocks tile their ranges exactly (unpack checks), skeletons hold no glyph, and `tools/strayscan.py`
   (glyph runs <= 64 bytes ended by FF/FE/FC with >= 2 common kana words, >= 70% kana) finds 196 sentences in the ROM:
   all inside units, none outside the blocks (one 8bpp-sprite false hit listed in `strayscan.NOISE`).
+
+## Checks (phase 7, verified 2026-11-01: tests/test_build_en.py)
+`build.verify` runs on every `build.py` (nothing is written when it fails) and in the test, on an in-memory build:
+- `romdiff.check` with the write log (`build/writes.txt`, every write through `blocks.Rom.put`): each write's
+  expected original bytes hold, no write overlaps or is overwritten, every changed byte has a write.
+- Every write sits inside `build.allowed()`: packed blocks (strings + pointer table), record blocks, LZ slots, the used
+  part of `blocks.FREE`, the engine area (`asm.ENGINE`..`asm.END`), the name-table sites and the hook spans.
+- Read-back: every packed string, through its (possibly moved) pointer, decodes with the English table to the
+  original skeleton with each unit replaced by its `en`, and keeps the original sequence of non-layout control codes
+  (faces, waits, scene commands, `{name}`, `{end}`); every translated name (`asm.NAMES`) and record field holds its `en`.
+- Moved blocks (story, rescue, boss, system, pause, tutorial go to free space): no aligned `0x08xxxxxx` word in the
+  original points into a vacated slot except its own pointer table. Two hits are compressed data (`NOT_POINTERS`).
+  Flag-masked (`& 0x0FFFFFFF`) matches were tried: ~80 hits, all Thumb code, so the scan is exact-only.
+- Hooks: no B/Bcc/BL within 4 KB lands strictly inside the bytes a hook wrote (capstone with `skipdata`; branches from
+  the original code a hook jumps over don't count).
+- `jp_left.py` does not apply: English reuses the Japanese glyph codes (`tbl/en.tbl`), so a `jp.tbl` scan reads every
+  English string as kana. The read-back above is the text-side leftover check; graphics text is phase 8.

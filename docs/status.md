@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Keep it to what the next session needs; history is in git.
 
-- **Phase:** phase 6 (translate) done 2026-11-01; next is phase 7 (insert, fit, check). All 837 text units
+- **Phase:** phase 7 (insert, fit, check) done 2026-11-01; next is phase 8 (QA in the emulator). All 837 text units
   translated (`script/*.json`: `src` = authored English, `en` = rendered with codes), batch check 0 errors,
   reviewer pass on every batch with every Critical/Important fixed (`work/tl/reviews.md`), Minors in `docs/polish.md`.
 - **Done:**
@@ -30,10 +30,16 @@ Updated at the end of every session. Keep it to what the next session needs; his
     in-game `work/qa/pilot`), translator / reviewer briefs. Batches b001-b011 in `work/tl/` (gitignored). Centred
     ending lines and multiboot link lines are raw `=` units (hand-laid). Story speakers come from face codes
     (`batches.FACES`: A3 Jin, A4 Akira, 00 Rand, 01 Gale, else demon id = names index).
-- **Next (phase 7, insert / fit / check):** lint is in place (`batches.lint`, run by the check); add `romdiff.py`
-  with the build's write log to the check, confirm control codes per block, then a QA tour of the English build
-  (`warp_all.py --rom build/pdc_en.gba --out work/qa/p6` was run at the end of phase 6: see its log). Then phase 8
-  visual QA, story pass (`tools/pairs.py --chapters`), polish pass (`docs/polish.md`).
+  - Phase 7 (docs/re/build.md "Checks"): `build.verify` gates every `build.py` and `tests/test_build_en.py`:
+    romdiff write log, writes only inside `build.allowed()`, every string read back through its pointer with its
+    control codes, no stale pointer into a moved block's old slot, no branch into a hook. `jp_left.py` doesn't apply
+    (English reuses the kana byte codes); read-back is the text-side leftover check. English tour
+    `warp_all.py --rom build/pdc_en.gba --out work/qa/p7`: 78/78 ok (sheets `work/qa/p7/_finals`, no verdicts yet).
+    Build sha1 814f33e6..., smoke ok.
+- **Next (phase 8, QA):** visual-QA verdicts on the English tour sheets (`work/qa/p7/_finals`, `qa_gate.py init` +
+  chunks, fresh read-only pass per chunk since no reviewer agent is started for us), graphics text (docs/re/graphics.md,
+  every row English in a zoomed cold-boot shot), re-time warp scenes if shots catch text mid-print, the in-game checks
+  in the carry-over list, then story pass (`tools/pairs.py --chapters`) and polish pass (`docs/polish.md`).
 - **Carry-over (non-blocking):**
   - Race menu printer (080205FE) is fixed 8 px cells, English glyphs sit left in their cell (`R0. 0`): proportional
     pen or a centred copy of the font there = phase 7 polish. Race needs a link partner; only the menu is reachable.
