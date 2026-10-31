@@ -1,10 +1,10 @@
 {"block": "pause", "codec": "msg", "entries": [
-{"id": "pause.000.00", "ptr": "30E414", "jp": "キャンセル", "en": "Cancel", "src": "Cancel"},
+{"id": "pause.000.00", "ptr": "30E414", "jp": "キャンセル", "en": "Back", "src": "Back"},
 {"id": "pause.001.00", "ptr": "30E41A", "jp": "もどす", "en": "Undo", "src": "Undo"},
 {"id": "pause.002.00", "ptr": "30E41E", "jp": "マップ", "en": "Map", "src": "Map"},
 {"id": "pause.003.00", "ptr": "30E422", "jp": "デビライザー", "en": "Demiloc", "src": "Demiloc"},
 {"id": "pause.004.00", "ptr": "30E429", "jp": "やりなおし", "en": "Retry", "src": "Retry"},
-{"id": "pause.005.00", "ptr": "30E42F", "jp": "はじめから", "en": "Restart", "src": "Restart"},
+{"id": "pause.005.00", "ptr": "30E42F", "jp": "はじめから", "en": "Stage 1", "src": "Stage 1"},
 {"id": "pause.006.00", "ptr": "30E435", "jp": "やめる", "en": "Quit", "src": "Quit"},
 {"id": "pause.007.00", "ptr": "30E439", "jp": "セーブ", "en": "Save", "src": "Save"}
 ]}
