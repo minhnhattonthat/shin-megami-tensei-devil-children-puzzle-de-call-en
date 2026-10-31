@@ -46,6 +46,10 @@ case-insensitive) must appear in the English, and nothing from Avoid may.
 | ヴァルハラ | Valhalla | | the heroes' (demon) world | |
 | クァドリガ | Quadriga | | Azrael's castle, the Imperium's base | |
 | フィーヨルグ | Fjorgyn | | フィーヨルグ雪原 = Fjorgyn Snowfield | |
+| エンベルの泉 | Embel Spring | 128 px card | area 1 (Rand route); area names per atwiki devilchildren_pdc | |
+| ルコッピア草原 | Lucoppia Plain | 128 px card | | |
+| プレクト火山 | Plekt Volcano | 128 px card | | |
+| タルタロスの樹海 | Tartarus Sea of Trees | 128 px card | | |
 | 雪原 | Snowfield; snowfield | | | |
 | 樹海 | Sea of Trees | | 樹海（ジュカイ） is the word with its reading: translate once, drop the reading | |
 | 地下牢 | dungeon | | | |

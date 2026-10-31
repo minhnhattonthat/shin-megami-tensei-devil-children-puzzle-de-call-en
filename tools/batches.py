@@ -190,12 +190,14 @@ def px(s):
 
 
 def balanced(words, lim2, first=224):
-    """Best 2-line split of words (line 2 <= lim2): the longer line as short as possible, so no one-word widow."""
+    """Best 2-line split of words (line 2 <= lim2): the longer line as short as possible, so no one-word widow; a
+    break after a sentence end wins if its longer line is at most 40 px longer."""
     best = None
     for k in range(1, len(words)):
         a, b = " ".join(words[:k]), " ".join(words[k:])
-        if px(a) <= first and px(b) <= lim2 and (best is None or max(px(a), px(b)) < best[0]):
-            best = (max(px(a), px(b)), [a, b])
+        score = max(px(a), px(b)) - (40 if re.search(r"[.!?][\"')]*$", a) else 0)
+        if px(a) <= first and px(b) <= lim2 and (best is None or score < best[0]):
+            best = (score, [a, b])
     return best and best[1]
 
 

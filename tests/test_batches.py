@@ -14,6 +14,11 @@ def test_wrap_pages():
     assert any("lines" in p for p in probs)
 
 
+def test_wrap_prefers_sentence_end():
+    assert batches.wrap("There's only one place I can think of. It's gotta be Quadriga-ho.") == [
+        "There's only one place I can think of.", "It's gotta be Quadriga-ho."]
+
+
 def test_line_colour():
     jp = "{col:03}あれ{n}{col:03}まだ{page}{col:03}たぶん"
     assert batches.line_colour(jp, "msg") == "03"

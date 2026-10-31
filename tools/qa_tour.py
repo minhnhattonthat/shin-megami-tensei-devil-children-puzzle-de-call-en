@@ -37,7 +37,9 @@ def runs():
     """[(run name, warp scene, extra --var list, frames, crop)]"""
     out, pages = [], story_pages()
     for k, n in sorted(pages.items()):
-        out.append((f"story_{k:02}", f"story_{k:02}", [], 900 + n * (MASH + 20), STORY_BOX))
+        # the warp intro takes ~800 frames and scenes pause between boxes; the extra shots catch a page whose last
+        # glyph lands on a press frame
+        out.append((f"story_{k:02}", f"story_{k:02}", ["EXTRA_EVERY=30"], 1800 + n * (MASH + 80), STORY_BOX))
     for r in (0, 1):
         for a in range(1, 7):
             out.append((f"boss_r{r}_a{a}", f"boss_r{r}_a{a}", ["EXTRA_EVERY=30"], 1900, MSG_BOX))

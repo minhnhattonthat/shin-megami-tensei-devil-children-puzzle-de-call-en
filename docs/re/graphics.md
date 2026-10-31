@@ -54,14 +54,16 @@ found in the static sweep, on-screen location not yet seen.
 | Pause list headers (64x8 strips, OBJ pal 6) | hud 0x1C72B8 tiles 0x86-0x95 | Demon List, Demiloc |
 | Stage HUD labels (32x8 OBJ) | hud tiles 0xBB 0xBF 0xC3 0xC7(64 px) 0xCF | MOVES TIME LIFE DEFEATED EGGS (fonts/tiny.txt) |
 | Puzzle HUD labels | hud_puzzle 0x2AADE0 (3 x 32x8), hud_puzzle_obj 0x219630 tiles 0xA0-0xB3 (the set puzzle mode loads) | BEST TIME MOVES; MOVES TIME LIFE BEST SCORE |
+| Area start cards (128x16) | outlined_kata 0x1C810C at 0x2800 + i * 0x400 | Embel Spring, Lucoppia Plain, Plekt Volcano, Tartarus Sea of Trees, Fjorgyn Snowfield, Quadriga (VWF font) |
 The hud and hud_puzzle_obj blocks grow when recompressed: they move to free space (`blocks.pack_lz`, literal xrefs).
 
 ## Area start card (phase 8 finding)
-"エンゼルの泉" etc.: 4 OBJ 32x16 sprites at y 40, tiles 0x240-0x25F, written at run time. The area names are not
-strings in any text encoding (`エンゼル` in jp.tbl only hits the demon-name tables), so the card is drawn from a
-graphics source not yet found. Next: `watch.lua` on writes to OBJ VRAM 0x06014800 during `stage_r0_a1` (frames
-300-460) for the writer's PC, then its source pointer. The big outlined katakana rows in hud (top) and
-hud_puzzle_obj (rows 1-8, 13-18) are glyph sets, probably for this card or result banners.
+エンベルの泉 etc.: 4 OBJ 32x16 sprites at y 40, tiles 0x240-0x25F. Source: block outlined_kata 0x1C810C at
+0x2800 + area * 0x400 (128x16 as the four 32x16 sprites, 8 tiles each), DMA'd by 0800E632 from its EWRAM copy
+(pointer table 0x081C93D0, index area_map 0x081FF868). Redrawn by `gfx.cards` (CARDS): the empty banner is the
+per-pixel majority of the six originals away from the lettering, English in fonts/vwf.txt, white 15 with ring 6.
+Names from the JP atwiki (devilchildren_pdc), glossary.md Places. Checked in game: `work/qa/cards/_finals`.
+No スタート! sprite seen with the card.
 
 ## Not checked / weak spots (do in phase 2 / 8 with the debug tool)
 - Phase 2 (2026-11-01): every screen below is now a warp scene (`tools/debug/scenes.txt`), VRAM dumps from

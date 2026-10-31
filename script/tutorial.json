@@ -95,7 +95,7 @@
 {"id": "tutorial.001.25", "ptr": "31091C", "jp": "{col:04}フハハハハ・・・・・・", "en": "{col:04}Mwahahaha......", "src": "Mwahahaha......"},
 {"id": "tutorial.001.26", "ptr": "31092C", "jp": "{col:04}いつまでそんなことを{n}{col:04}おしえているんだ！？", "en": "{col:04}How long do you intend to{n}{col:04}keep teaching such nonsense!?", "src": "How long do you intend to keep teaching such nonsense!?"},
 {"id": "tutorial.001.27", "ptr": "310960", "jp": "だ、だれだ！？", "en": "Wh-who's there!?", "src": "Wh-who's there!?"},
-{"id": "tutorial.001.28", "ptr": "31096A", "jp": "{col:04}さあ、はやくこい。{n}{col:04}まちくたびれたぞ。", "en": "{col:04}Come now, hurry up. I've{n}{col:04}grown tired of waiting.", "src": "Come now, hurry up. I've grown tired of waiting."},
+{"id": "tutorial.001.28", "ptr": "31096A", "jp": "{col:04}さあ、はやくこい。{n}{col:04}まちくたびれたぞ。", "en": "{col:04}Come now, hurry up.{n}{col:04}I've grown tired of waiting.", "src": "Come now, hurry up. I've grown tired of waiting."},
 {"id": "tutorial.001.29", "ptr": "31098D", "jp": "ボスとのたたかいは、{n}パズルだけじゃない。", "en": "Boss battles aren't just puzzles.", "src": "Boss battles aren't just puzzles."},
 {"id": "tutorial.001.30", "ptr": "3109A5", "jp": "気をひきしめないと{n}ボスには勝てないぞ！", "en": "If you don't stay sharp,{n}you'll never beat the boss!", "src": "If you don't stay sharp, you'll never beat the boss!"},
 {"id": "tutorial.001.31", "ptr": "3109E2", "jp": "こいつは！{n}テイコクグンのクロセルだ！", "en": "It's him! Crosel of the Imperial Army!", "src": "It's him! Crosel of the Imperial Army!"},
