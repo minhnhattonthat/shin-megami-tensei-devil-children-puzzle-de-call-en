@@ -50,10 +50,15 @@ def dump(path, name, fresh):
     doc = {"block": name, "codec": codec(name), "entries": entries}
     if orphans:
         doc["orphans"] = orphans
-    body = ",\n".join(json.dumps(e, ensure_ascii=False) for e in entries)
+    write_doc(path, doc)
+    return len(entries), len(orphans)
+
+
+def write_doc(path, doc):
+    """One entry per line (diffable); tools/batches.py merge writes through here too."""
+    body = ",\n".join(json.dumps(e, ensure_ascii=False) for e in doc["entries"])
     head = json.dumps({k: v for k, v in doc.items() if k != "entries"}, ensure_ascii=False)[:-1]
     path.write_text(head + ', "entries": [\n' + body + "\n]}\n", encoding="utf-8", newline="\n")
-    return len(entries), len(orphans)
 
 
 def en_map():
