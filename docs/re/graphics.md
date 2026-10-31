@@ -46,6 +46,23 @@ found in the static sweep, on-screen location not yet seen.
 | ? | outlined bubble lettering, 2 rows (JP or Latin unclear) | LZ 0x201EB8 | sweep |
 | ? (link?) | 8bpp line of hiragana text (~がんばって … ここでデビ…) | LZ 0x2A8970 (8bpp) | sweep |
 
+## Redrawn (phase 8, tools/gfx.py LABELS; checked in game, zoomed)
+| Element | Block / tiles | English |
+|---|---|---|
+| Title menu (64x64 OBJ, pal 4; each item shows only its JP band, the cursor frame covers the gaps) | title_menu 0x23AEDC | STORY PUZZLE RACE DEMONARY (menu-font caps + outline) |
+| Story submenu, no save / with save (composed at run time from 8 px strips of these) | title_sub 0x23B1D8, title_sub_hi 0x23B4AC | NEW GAME, (CONTINUE), TUTORIAL |
+| Pause list headers (64x8 strips, OBJ pal 6) | hud 0x1C72B8 tiles 0x86-0x95 | Demon List, Demiloc |
+| Stage HUD labels (32x8 OBJ) | hud tiles 0xBB 0xBF 0xC3 0xC7(64 px) 0xCF | MOVES TIME LIFE DEFEATED EGGS (fonts/tiny.txt) |
+| Puzzle HUD labels | hud_puzzle 0x2AADE0 (3 x 32x8), hud_puzzle_obj 0x219630 tiles 0xA0-0xB3 (the set puzzle mode loads) | BEST TIME MOVES; MOVES TIME LIFE BEST SCORE |
+The hud and hud_puzzle_obj blocks grow when recompressed: they move to free space (`blocks.pack_lz`, literal xrefs).
+
+## Area start card (phase 8 finding)
+"エンゼルの泉" etc.: 4 OBJ 32x16 sprites at y 40, tiles 0x240-0x25F, written at run time. The area names are not
+strings in any text encoding (`エンゼル` in jp.tbl only hits the demon-name tables), so the card is drawn from a
+graphics source not yet found. Next: `watch.lua` on writes to OBJ VRAM 0x06014800 during `stage_r0_a1` (frames
+300-460) for the writer's PC, then its source pointer. The big outlined katakana rows in hud (top) and
+hud_puzzle_obj (rows 1-8, 13-18) are glyph sets, probably for this card or result banners.
+
 ## Not checked / weak spots (do in phase 2 / 8 with the debug tool)
 - Phase 2 (2026-11-01): every screen below is now a warp scene (`tools/debug/scenes.txt`), VRAM dumps from
   `warp_all.py --ppu` in `work/qa/warp/<scene>/ppu_*`, vramfind summaries in `work/qa/vf/`. Matched by block (table
