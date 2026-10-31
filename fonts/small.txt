@@ -1,0 +1,96 @@
+# English glyphs the game's 8x8 menu font (LZ 0x161FD0) lacks, drawn for this project (MIT like the repo).
+# Same format as fonts/vwf.txt: "== C" then rows of '#' (colour 1) and '.', row 0 = top of the 8x8 tile, baseline
+# row 6 like the game's letters. They overwrite the Japanese glyphs at the en.tbl codes (tools/smallfont.py).
+== ,
+.
+.
+.
+.
+.
+#
+#
+#
+== .
+.
+.
+.
+.
+.
+#
+#
+== '
+#
+#
+#
+== "
+#.#
+#.#
+#.#
+== …
+.....
+.....
+.....
+.....
+.....
+.....
+#.#.#
+== ♥
+.##.##.
+#######
+#######
+.#####.
+..###..
+...#...
+== %
+##...#
+##..#.
+...#..
+..#...
+.#..##
+#...##
+== ♪
+..###
+..#.#
+..#..
+..#..
+###..
+###..
+== #
+.#.#.
+#####
+.#.#.
+.#.#.
+#####
+.#.#.
+== <
+...#
+..#.
+.#..
+#...
+.#..
+..#.
+...#
+== >
+#...
+.#..
+..#.
+...#
+..#.
+.#..
+#...
+== [
+###
+#..
+#..
+#..
+#..
+#..
+###
+== ]
+###
+..#
+..#
+..#
+..#
+..#
+###

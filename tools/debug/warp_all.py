@@ -36,7 +36,8 @@ def run(rom, outdir, scene, ppu=False):
     if ppu:  # VRAM/palette/OAM dump on the last frame, for vramfind.py
         args = args + ["--script", str(Path(SKILL) / "scripts" / "lua" / "probes" / "ppudump.lua")]
     out = outdir / name
-    state = ROOT / "work" / "states" / (name + ".mss")
+    states = ROOT / "work" / "states"  # a build's states go in a subfolder, so they never replace the original's
+    state = (states if rom.parent == ROOT / "rom" else states / rom.stem) / (name + ".mss")
     state.parent.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, "-X", "utf8", str(Path(SKILL) / "scripts" / "emu.py"), str(rom), "--out", str(out),
            "--script", str(ROOT / "tools" / "debug" / "warp.lua"), "--var", "SCENE='%s'" % name,

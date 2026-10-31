@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tools"))
+import asm  # noqa: E402
 import blocks  # noqa: E402
 import check_rom  # noqa: E402
 import extract  # noqa: E402
@@ -25,10 +26,15 @@ def build(orig, en=None):
     rom = blocks.Rom(orig)
     for name in blocks.PACKED:
         blocks.pack_packed(rom, name, text.packed_entries(orig, name, en))
-    for name in blocks.RECORDS:
-        blocks.pack_record(rom, name, text.record_entries(orig, name, en))
+    for name in blocks.RECORDS:  # names: in English they live in asm.NAMES (16 bytes each), below
+        blocks.pack_record(rom, name, text.record_entries(orig, name, {} if name == "names" else en))
+    lz = {name: blocks.unpack_lz(orig, name) for name in blocks.LZ}
+    if en:
+        asm.edit_lz(lz)
     for name in blocks.LZ:
-        blocks.pack_lz(rom, name, *blocks.unpack_lz(orig, name))
+        blocks.pack_lz(rom, name, *lz[name])
+    if en:  # English needs the VWF engine (asm/vwf.s); no edits = the original ROM
+        asm.apply(rom, text.wide_names(orig, en, asm.NAME_SIZE))
     return rom
 
 

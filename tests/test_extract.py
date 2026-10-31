@@ -50,8 +50,8 @@ def test_record_roundtrip(orig, units):
             b = t.encode(e["jp"])
             assert orig[p:p + len(b)] == b, e["id"]
             name = e["id"].split(".")[0]
-            pad = blocks.FIELDS[name][int(e["id"].split(".")[2]) if e["id"].count(".") == 2 else 0][1]
-            rest = orig[p + len(b):p + e["max"]]
+            n, pad = blocks.FIELDS[name][int(e["id"].split(".")[2]) if e["id"].count(".") == 2 else 0]
+            rest = orig[p + len(b):p + n]  # the ROM field; `max` is the English room (blocks.EN_MAX)
             assert (rest == b"" or rest[0] == 0xFF) if pad == 0xFF else not any(rest), e["id"]
 
 
@@ -87,19 +87,35 @@ def test_script_files_are_current(units):
 
 
 def test_en_goes_in(orig):
-    en = {"pause.000.00": "もどす", "story.000.01": "テスト{n}テスト！{wait:00}{clr}{box:09}もうひとつ",
-          "rescue.001.00": "ナカマ", "names.000": "ジン", "trade.000.1": "はい", "devidas_menu.000.4": "はい"}
+    en = {"pause.000.00": "Back", "story.000.01": "Test{n}Test!{wait:00}{clr}{box:09}One more",
+          "rescue.001.00": "{name} joins you.", "trade.000.1": "Yes", "devidas_menu.000.4": "Ye"}
+    # every unit of story 0 in English: a half-English string can't be read back with one table
+    en.update({e["id"]: f"Unit {k}" for k, e in enumerate(text.units(orig)["story"])
+               if e["id"].startswith("story.000.") and e["id"] not in en})
     out = bytes(build.build(orig, en).out)
+    got_en = {e["id"]: e["jp"] for us in text.units(out, "en").values() for e in us}
     got = {e["id"]: e["jp"] for us in text.units(out).values() for e in us}
     want = {e["id"]: e["jp"] for us in text.units(orig).values() for e in us}
-    assert {k: got[k] for k in en} == en
+    assert {k: got_en[k] for k in en} == en
     assert {k: v for k, v in got.items() if k not in en} == {k: v for k, v in want.items() if k not in en}
     assert out[0x28B0BA:0x28B0BC] == b"\x00\x00"  # pad-00 field refilled with spaces
 
 
+def test_names_move_to_wide_table(orig):
+    import asm
+    out = bytes(build.build(orig, {"names.000": "Jack Frost"}).out)
+    rec = out[asm.NAMES:asm.NAMES + asm.NAME_SIZE]
+    assert blocks.en_table("msg").decode(rec, length=10)[0] == "Jack Frost" and rec[10:] == b"\xff" * 6
+    assert out[asm.NAMES + asm.NAME_SIZE:asm.NAMES + asm.NAME_SIZE + 8] == orig[0x30E494:0x30E49C].split(b"\xff")[0].ljust(8, b"\xff")
+    assert out[0x30E48C:0x30E9C4] == orig[0x30E48C:0x30E9C4]  # the old table stays (nothing reads it)
+    assert int.from_bytes(out[0x62BC:0x62C0], "little") == asm.NAMES + 0x08000000
+
+
 def test_record_overflow_refused(orig):
-    with pytest.raises(ValueError):
-        build.build(orig, {"names.000": "ソルレオンソルレオン"})
+    with pytest.raises(ValueError, match="bytes >"):
+        build.build(orig, {"names.000": "Sixteen chars ok"})
+    with pytest.raises(ValueError, match="bytes >"):
+        build.build(orig, {"trade.000.1": "Fifteen glyphs!"})
 
 
 def test_dump_keeps_en(tmp_path):

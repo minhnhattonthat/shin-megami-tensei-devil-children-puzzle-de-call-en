@@ -24,7 +24,8 @@ COLOUR = re.compile(r"\{col:[0-9A-F]{2}\}$")
 
 
 def is_glyph(tok):
-    return not tok.startswith(("{", "[")) or len(tok) == 1
+    """Printed text: a glyph, or {name} (msg: the game inserts the rescued demon's name there)."""
+    return not tok.startswith(("{", "[")) or len(tok) == 1 or tok == "{name}"
 
 
 def split(codec, s):
@@ -53,9 +54,13 @@ def split(codec, s):
     return out
 
 
-def _packed_units(d, name):
+def _tab(codec, lang):
+    return blocks.en_table(codec) if lang == "en" else blocks.table(codec)
+
+
+def _packed_units(d, name, lang="jp"):
     codec = blocks.PACKED[name][3]
-    t = blocks.table(codec)
+    t = _tab(codec, lang)
     for k, (raw, p) in enumerate(zip(blocks.unpack_packed(d, name), blocks.pointers(d, name))):
         s = t.decode(raw, length=len(raw))[0]
         u = 0
@@ -73,8 +78,8 @@ def field_text(raw, pad):
     return raw.rstrip(b"\x00")
 
 
-def _record_units(d, name):
-    t = blocks.table("msg")
+def _record_units(d, name, lang="jp"):
+    t = _tab("msg", lang)
     fields = blocks.FIELDS[name]
     start, _, size = blocks.RECORDS[name]
     for k, rec in enumerate(blocks.unpack_record(d, name)):
@@ -82,40 +87,58 @@ def _record_units(d, name):
         for f, (n, pad) in enumerate(fields):
             uid = f"{name}.{k:03}" + (f".{f}" if len(fields) > 1 else "")
             b = field_text(rec[at:at + n], pad)
-            e = {"id": uid, "ptr": f"{start + k * size + at:06X}", "jp": t.decode(b, length=len(b))[0], "max": n}
+            e = {"id": uid, "ptr": f"{start + k * size + at:06X}", "jp": t.decode(b, length=len(b))[0],
+                 "max": blocks.EN_MAX.get(name, n)}
             if uid in blocks.DATA:
                 e["data"] = blocks.DATA[uid]
             yield e
             at += n
 
 
-def units(d):
-    """{block: [unit dict (id, ptr, jp[, max, data])]} for the ROM d."""
-    out = {name: list(_packed_units(d, name)) for name in blocks.PACKED}
-    out.update({name: list(_record_units(d, name)) for name in blocks.RECORDS})
+def units(d, lang="jp"):
+    """{block: [unit dict (id, ptr, jp[, max, data])]} for the ROM d; lang "en" decodes a build's English glyphs
+    (the `jp` key then holds that text)."""
+    out = {name: list(_packed_units(d, name, lang)) for name in blocks.PACKED}
+    out.update({name: list(_record_units(d, name, lang)) for name in blocks.RECORDS})
     return out
 
 
 def packed_entries(d, name, en):
     """The block's strings with every unit whose id is in `en` replaced; others keep their original bytes."""
     codec = blocks.PACKED[name][3]
-    t = blocks.table(codec)
+    t, te = blocks.table(codec), blocks.en_table(codec)
     out = []
     for k, raw in enumerate(blocks.unpack_packed(d, name)):
         pieces, u, edited = [], 0, False
         for is_unit, piece in split(codec, t.decode(raw, length=len(raw))[0]):
             if is_unit:
                 uid = f"{name}.{k:03}.{u:02}"
-                if uid in en:
-                    piece, edited = en[uid], True
                 u += 1
-            pieces.append(piece)
-        out.append(t.encode("".join(pieces)) if edited else raw)
+                if uid in en:  # English glyph codes (tbl/en.tbl); untouched units keep their Japanese bytes
+                    pieces.append(te.encode(en[uid]))
+                    edited = True
+                    continue
+            pieces.append(t.encode(piece))
+        out.append(b"".join(pieces) if edited else raw)
+    return out
+
+
+def wide_names(d, en, size):
+    """The name table in `size`-byte records (tools/asm.py NAMES): each name's text + FF fill, at most size - 1 bytes,
+    so every name ends in FF. Names without `en` keep their Japanese bytes."""
+    t = blocks.en_table("msg")
+    out = []
+    for k, rec in enumerate(blocks.unpack_record(d, "names")):
+        uid = f"names.{k:03}"
+        b = t.encode(en[uid]) if uid in en else field_text(rec, 0xFF)
+        if len(b) > size - 1:
+            raise ValueError(f"{uid}: {len(b)} bytes > {size - 1}: {en.get(uid)!r}")
+        out.append(b + b"\xff" * (size - len(b)))
     return out
 
 
 def record_entries(d, name, en):
-    t = blocks.table("msg")
+    t = blocks.en_table("msg")
     fields = blocks.FIELDS[name]
     out = []
     for k, rec in enumerate(blocks.unpack_record(d, name)):
@@ -137,6 +160,6 @@ if __name__ == "__main__":
     sp = split("story", s)
     assert "".join(x for _, x in sp) == s
     assert [x for u, x in sp if u] == ["ジンと{n}アキラ{wait:00}{clr}{box:09}は{col:03}行{col:00}"], sp
-    assert [x for u, x in split("msg", "{f9:A3}{n}ナカマ。{page}{end}") if u] == ["ナカマ。"]
+    assert [x for u, x in split("msg", "{name}が{n}ナカマ。{page}{end}") if u] == ["{name}が{n}ナカマ。"]
     assert not [x for u, x in split("msg", "{n}{page}{end}") if u]
     print("selftest ok")

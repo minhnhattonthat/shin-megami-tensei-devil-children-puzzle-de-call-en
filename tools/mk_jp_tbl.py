@@ -36,8 +36,9 @@ def chars():
 
 
 # Message strings (rescue / boss / system / menus / client): FF end, FE newline, FC page (wait for button),
-# FD xx colour, F9 xx (guess: speaker/face; seen at string starts). docs/re/text.md "Other text".
-MSG = {"FF": "{end}", "FE": "{n}", "FC": "{page}", "FD": "{col:1}", "F9": "{f9:1}"}
+# FD xx colour, F9 = the rescued demon's name (no argument: printing resumes at the next byte; 080062C0).
+# docs/re/text.md "Other text".
+MSG = {"FF": "{end}", "FE": "{n}", "FC": "{page}", "FD": "{col:1}", "F9": "{name}"}
 # あそびかた tutorial (tools/tutorial.py): F8 xx demo action (arg bytes per F8ARGS), FA xx pause, rest as MSG
 TUT_F8 = {0x00: 1, 0x01: 1, 0x02: 2, 0x03: 0, 0x04: 0, 0x05: 2, 0x06: 0, 0x07: 0, 0x08: 0, 0x09: 0, 0x0B: 1, 0x0C: 0}
 
