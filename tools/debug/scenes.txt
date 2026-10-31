@@ -1,0 +1,96 @@
+# Scene list for tools/debug/warp.lua and warp_all.py (docs/re/debug.md).
+#   NAME STATE [POKES/OPTIONS..] | [emu.py args] | [expected log text]
+# POKE = ADDR=VAL or ADDR=VAL@STATE (B78/B7C named); OPTION = an upper-case warp.lua global (SCRIPT, FLOOR_RESULT..).
+# emu.py args default to --frames 900; warp_all.py adds --script/--var/--out/--state-out. The scene passes when its
+# log has "warp NAME" and the expected text.
+# States (table 0x0830C408): 0 title, 1 puzzle select, 2 DeviDas, 3 story stage, 4 puzzle stage, 5 race,
+# 6 story text, 7 tutorial, 8 character select, 9 save, 10 no-op, 11 boot logos.
+# Story: B7C = route (0 Rand: scripts 0-14, 1 Gale: 15-28), B78 = area counter: 0 = intro (script 0), 1-6 = before
+# area N, 7-12 = after area N-6. SCRIPT forces the script (chained ones 2 14 16 28 have no B78 of their own).
+
+title          0                     | --frames 600                          | STATE 0
+title_menu     0                     | --route-str "560 -;6 start;100 -" --frames 700 | STATE 0
+title_story    0                     | --route-str "560 -;6 start;200 -;6 a;90 -" --frames 860 | STATE 0
+charselect     8                     | --frames 700                          | STATE 8
+
+story_00       6  B78=0  B7C=0 SCRIPT=0   | --frames 650 --mash 40 | script 0
+story_01       6  B78=1  B7C=0 SCRIPT=1   | --frames 650 --mash 40 | script 1
+story_02       6  B78=1  B7C=0 SCRIPT=2   | --frames 650 --mash 40 | script 2
+story_03       6  B78=7  B7C=0 SCRIPT=3   | --frames 650 --mash 40 | script 3
+story_04       6  B78=2  B7C=0 SCRIPT=4   | --frames 650 --mash 40 | script 4
+story_05       6  B78=8  B7C=0 SCRIPT=5   | --frames 650 --mash 40 | script 5
+story_06       6  B78=3  B7C=0 SCRIPT=6   | --frames 650 --mash 40 | script 6
+story_07       6  B78=9  B7C=0 SCRIPT=7   | --frames 650 --mash 40 | script 7
+story_08       6  B78=4  B7C=0 SCRIPT=8   | --frames 650 --mash 40 | script 8
+story_09       6  B78=10 B7C=0 SCRIPT=9   | --frames 650 --mash 40 | script 9
+story_10       6  B78=5  B7C=0 SCRIPT=10  | --frames 650 --mash 40 | script 10
+story_11       6  B78=11 B7C=0 SCRIPT=11  | --frames 650 --mash 40 | script 11
+story_12       6  B78=6  B7C=0 SCRIPT=12  | --frames 650 --mash 40 | script 12
+story_13       6  B78=12 B7C=0 SCRIPT=13  | --frames 650 --mash 40 | script 13
+story_14       6  B78=12 B7C=0 SCRIPT=14  | --frames 650 --mash 40 | script 14
+story_15       6  B78=1  B7C=1 SCRIPT=15  | --frames 650 --mash 40 | script 15
+story_16       6  B78=1  B7C=1 SCRIPT=16  | --frames 650 --mash 40 | script 16
+story_17       6  B78=7  B7C=1 SCRIPT=17  | --frames 650 --mash 40 | script 17
+story_18       6  B78=2  B7C=1 SCRIPT=18  | --frames 650 --mash 40 | script 18
+story_19       6  B78=8  B7C=1 SCRIPT=19  | --frames 650 --mash 40 | script 19
+story_20       6  B78=3  B7C=1 SCRIPT=20  | --frames 650 --mash 40 | script 20
+story_21       6  B78=9  B7C=1 SCRIPT=21  | --frames 650 --mash 40 | script 21
+story_22       6  B78=4  B7C=1 SCRIPT=22  | --frames 650 --mash 40 | script 22
+story_23       6  B78=10 B7C=1 SCRIPT=23  | --frames 650 --mash 40 | script 23
+story_24       6  B78=5  B7C=1 SCRIPT=24  | --frames 650 --mash 40 | script 24
+story_25       6  B78=11 B7C=1 SCRIPT=25  | --frames 650 --mash 40 | script 25
+story_26       6  B78=6  B7C=1 SCRIPT=26  | --frames 650 --mash 40 | script 26
+story_27       6  B78=12 B7C=1 SCRIPT=27  | --frames 650 --mash 40 | script 27
+story_28       6  B78=12 B7C=1 SCRIPT=28  | --frames 650 --mash 40 | script 28
+# endings: the last script runs to its picture + おわり (no staff roll found in the ROM; see docs/re/debug.md)
+ending_r0      6  B78=12 B7C=0 SCRIPT=14  | --frames 8400 --mash 40 --timeout 900 | script 14
+ending_r1      6  B78=12 B7C=1 SCRIPT=28  | --frames 9000 --mash 40 --timeout 900 | script 28
+
+# area start (floor intro with the area name card), one per route and area
+stage_r0_a1    3  B78=1 B7C=0  | --frames 460 | floor start, area 0
+stage_r0_a2    3  B78=2 B7C=0  | --frames 460 | floor start, area 1
+stage_r0_a3    3  B78=3 B7C=0  | --frames 460 | floor start, area 2
+stage_r0_a4    3  B78=4 B7C=0  | --frames 460 | floor start, area 3
+stage_r0_a5    3  B78=5 B7C=0  | --frames 460 | floor start, area 4
+stage_r0_a6    3  B78=6 B7C=0  | --frames 460 | floor start, area 5
+stage_r1_a1    3  B78=1 B7C=1  | --frames 460 | floor start, area 0
+stage_r1_a2    3  B78=2 B7C=1  | --frames 460 | floor start, area 1
+stage_r1_a3    3  B78=3 B7C=1  | --frames 460 | floor start, area 2
+stage_r1_a4    3  B78=4 B7C=1  | --frames 460 | floor start, area 3
+stage_r1_a5    3  B78=5 B7C=1  | --frames 460 | floor start, area 4
+stage_r1_a6    3  B78=6 B7C=1  | --frames 460 | floor start, area 5
+# boss fight after a forced floor clear (boss intro dialogue)
+boss_r0_a1     3  B78=1 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 0
+boss_r0_a2     3  B78=2 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 1
+boss_r0_a3     3  B78=3 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 2
+boss_r0_a4     3  B78=4 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 3
+boss_r0_a5     3  B78=5 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 4
+boss_r0_a6     3  B78=6 B7C=0 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 5
+boss_r1_a1     3  B78=1 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 0
+boss_r1_a2     3  B78=2 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 1
+boss_r1_a3     3  B78=3 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 2
+boss_r1_a4     3  B78=4 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 3
+boss_r1_a5     3  B78=5 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 4
+boss_r1_a6     3  B78=6 B7C=1 FLOOR_RESULT=0x63 RESULT_AT=30 | --frames 1000 --mash 40 | boss start, area 5
+# boss won -> post-area script (the game's own flow: B78 += 6)
+area_clear     3  B78=1 B7C=0 FLOOR_RESULT=0x63 BOSS_RESULT=0x63 RESULT_AT=30 | --frames 1700 --mash 40 | script 3
+gameover       3  B78=1 B7C=0 FLOOR_RESULT=0x63 BOSS_RESULT=0x61 RESULT_AT=30 | --frames 1400 --mash 40 | continue screen
+rescue         3  B78=1 B7C=0 FLOOR_RESULT=2 RESCUE_ID=5      | --frames 800 | floor result 0x2
+pause          3  B78=1 B7C=0  | --route-str "700 -;10 a;100 -" --frames 850 | floor start, area 0
+# pause cursor skips disabled items (もどす, デビライザー on a fresh floor): down = マップ やりなおし はじめから やめる
+pause_map      3  B78=1 B7C=0  | --route-str "700 -;10 a;60 -;6 down;30 -;6 a;150 -" --frames 1010 | floor start
+pause_first    3  B78=1 B7C=0  | --route-str "700 -;10 a;60 -;6 down;30 -;6 down;30 -;6 down;30 -;6 a;150 -" --frames 1080 | floor start
+pause_quit     3  B78=1 B7C=0  | --route-str "700 -;10 a;60 -;6 down;30 -;6 down;30 -;6 down;30 -;6 down;30 -;6 a;150 -" --frames 1110 | floor start
+pause_save     3  B78=1 B7C=0  | --route-str "700 -;10 a;60 -;6 up;30 -;6 a;150 -" --frames 1000 | floor start
+save           9  B78=7 B7C=0  | --frames 450 | STATE 9
+
+puzzle_select  1  B78=0xFF     | --frames 700 | STATE 1
+puzzle_e01     4  B78=0x00     | --frames 700 | puzzle start
+puzzle_n06     4  B78=0x15     | --frames 700 | puzzle start
+puzzle_h10     4  B78=0x29     | --frames 700 | puzzle start
+puzzle_clear   4  B78=0x00 PUZZLE_RESULT=0x63 PUZZLE_EXIT=0x18 | --frames 1000 | STATE 1
+devidas        2               | --frames 700 | STATE 2
+race           5               | --frames 600 | STATE 5
+tutorial_1     7  B78=0        | --frames 1200 | STATE 7
+tutorial_2     7  B78=1        | --frames 1200 | STATE 7
+tutorial_3     7  B78=2        | --frames 1200 | STATE 7

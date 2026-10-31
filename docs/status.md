@@ -2,28 +2,33 @@
 
 Updated at the end of every session. Keep it to what the next session needs; history is in git.
 
-- **Phase:** phase 1 (recon) done 2026-11-01; next is phase 2 (debug tool). No build yet.
+- **Phase:** phase 2 (debug tool) done 2026-11-01; next is phase 3 (identity build). No build yet.
 - **Done:**
   - Step 0: template, MesenCE 2.2.1 + GBA BIOS in `tools/mesen/`, guard hook proven, pre-commit runs `tools/check.py`,
     `rom.sha1` pinned, original ROM smoke-boots.
-  - Phase 1 (docs/re/text.md, docs/re/graphics.md):
-    - Encoding + `tbl/jp.tbl` (fixed 0x1E=石, 0xF2=口), big font LZ 0x160698, small 8 px font LZ 0x161FD0.
-    - Story scripts 0x32A670 (roundtrip test); all other text mapped with pointer tables + xrefs: demon rescue /
-      boss dialogue, save messages, pause / title menus, demon names (8-byte records, 167), tutorial (own command
-      set, parse test `tests/test_tutorial.py`), link trade / transfer messages, DeviDas menu, multiboot client text.
-    - ROM layout incl. multiboot loader + client images; free space 0x3529D0-0x3FFFFF verified (no code pointers,
-      read-watch on 3 routes: 0 reads).
-    - Graphics survey: tour of title + all 4 modes, static sweep of all 556 LZ blocks (4bpp + 8bpp) and the raw
-      8bpp sprite region; every text block listed with offsets.
-  - Tools added: `textscan.py`, `ptrtables.py`, `tutorial.py`, `gfxsweep.py`, `traptest.py`.
-- **Next (phase 2, debug tool):**
-  1. `tools/debug/scenes.txt` + `warp.lua`: find stage/scene id, story flags and save layout in RAM (ramsearch over
-     ramdump between stages; watch who reads the story table index byte [0x03000BF3]). Scenes: each story chapter
-     (both routes: scripts 0-14 / 15-28), story map, stage clear, boss fight, game over, ending, credits, save screens,
-     デビライザー, DeviDas, puzzle mode, あそびかた parts 1-3.
-  2. On each warped screen: match unknown graphics with `vramfind.py` vs `work/lzblocks/` (re-make with the snippet in
-     git history or `tools/lz77.py dec`), close the "Not checked" list in docs/re/graphics.md.
-  3. Runtime string log on readers 0800B53A (small font) and 0801B3B0 (story) during the scene tour.
+  - Phase 1 (docs/re/text.md, docs/re/graphics.md): encoding + `tbl/jp.tbl`, fonts (LZ 0x160698 big, 0x161FD0 small),
+    story scripts 0x32A670 (roundtrip test), all other text tables mapped, ROM layout, free space 0x3529D0-0x3FFFFF
+    verified, graphics survey (tour + LZ sweep).
+  - Phase 2 (docs/re/debug.md): main loop state table 0x0830C408 (12 states), story vars B78 0x03002B78 (area) /
+    B7C 0x03002B7C (route), script tables, stage event byte [[0x03002BDC]+0x157C] (floor / boss / puzzle results),
+    puzzle-mode stage select (B78 = diff<<4 | stage). `tools/debug/warp.lua` + `scenes.txt` (78 scenes: title menus,
+    char select, all 29 story scripts, both endings, 12 area starts with the area card, 12 bosses, area clear ->
+    post script, GAME OVER, demon rescue dialogue, pause menu + マップ / はじめから / やめる / セーブ prompts, save
+    screen, puzzle select / 3 stages / clear, DeviDas, race, tutorial parts 1-3). `tools/debug/warp_all.py` runs
+    all from cold boot: **78/78 ok**, shots `work/qa/warp/_finals/`, states `work/states/<scene>.mss`, `--ppu` VRAM
+    dumps; vramfind summaries `work/qa/vf/` (graphics.md updated). `tools/debug/scenelog.lua` logs state changes.
+    Test `tests/test_scenes.py`.
+- **Next (phase 3, identity build):** `build.py` unpack -> repack with no edits, byte-identical to the original, as a
+  test (story scripts + other text tables + fonts/LZ blocks that later phases touch). Then phase 4 extract.
+- **Carry-over (non-blocking):**
+  - デビライザー screen not reached: needs a devil in デビルいちらん (debug.md "Not reached yet"). Add a scene when
+    the devil-list RAM is found.
+  - Pin exact tiles for puzzle select / race / DeviDas banners / char select plates; area start card source (guess:
+    runtime-built; trace OAM tile writer) — graphics.md.
+  - Runtime string log on readers 0800B53A (small font) and 0801B3B0 (story) over `warp_all` (phase 8 text tour);
+    rescue dialogue for every demon via `--var RESCUE_ID=n` on scene `rescue`.
+  - つづきから (continue with a save) and save-file screens: warp `pause_save`, save in game, keep the .sav as a
+    fixture (`--sav`), then add a continue scene.
 - **Open bugs:** none.
 - **Waiting on the user:** nothing. (GUI keyboard check of `tools/mesen/Mesen.exe` not done: headless session; harmless.)
-  Race mode and link trade need a second GBA (link cable): only reachable as text/graphics, not by tour.
+  Race mode and link trade need a second GBA (link cable): only the waiting screen is reachable.
