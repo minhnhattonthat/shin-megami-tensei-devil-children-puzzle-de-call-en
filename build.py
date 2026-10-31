@@ -15,6 +15,7 @@ import asm  # noqa: E402
 import blocks  # noqa: E402
 import check_rom  # noqa: E402
 import extract  # noqa: E402
+import gfx  # noqa: E402
 import romdiff  # noqa: E402
 import text  # noqa: E402
 
@@ -33,6 +34,7 @@ def build(orig, en=None):
     lz = {name: blocks.unpack_lz(orig, name) for name in blocks.LZ}
     if en:
         asm.edit_lz(lz)
+        gfx.apply(lz)  # graphics text (docs/re/graphics.md)
     for name in blocks.LZ:
         blocks.pack_lz(rom, name, *lz[name])
     if en:  # English needs the VWF engine (asm/vwf.s); no edits = the original ROM
@@ -104,6 +106,9 @@ def verify(orig, rom, en):
 
 
 def main():
+    global OUT
+    if "--out" in sys.argv:  # another file, e.g. while a QA tour still reads build/pdc_en.gba
+        OUT = Path(sys.argv[sys.argv.index("--out") + 1]).resolve()
     check_rom.check()
     en = extract.en_map()
     known = {e["id"] for us in text.units(ROM.read_bytes()).values() for e in us}
