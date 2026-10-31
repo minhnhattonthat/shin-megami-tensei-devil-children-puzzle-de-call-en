@@ -53,6 +53,18 @@ def small_mask(s, font, bold=False):
     return mask
 
 
+def tiny_mask(s):
+    """Text in fonts/tiny.txt (5-row caps), 1 px between letters."""
+    g, mask = vwf.glyphs(ROOT / "fonts" / "tiny.txt"), [[] for _ in range(5)]
+    for i, ch in enumerate(s):
+        rows = g[ch]
+        w = max(map(len, rows))
+        for y in range(5):
+            r = rows[y] if y < len(rows) else ""
+            mask[y] += [1 if x < len(r) and r[x] == "#" else 0 for x in range(w)] + ([0] if i < len(s) - 1 else [])
+    return mask
+
+
 def draw(img, m, cx, top, fill, outline, area, s=""):
     """Outlined text mask centred on column cx, top row at top; only pixels inside area (x0, y0, x1, y1)."""
     w = len(m[0])
@@ -110,7 +122,8 @@ def edit(lab, data, font):
         for y in range(y0, y1 + 1):
             img[y][x0:x1 + 1] = [bg] * (x1 - x0 + 1)
     for s, cx, top in lab["text"]:
-        draw(img, small_mask(s, font), cx, top, lab["fill"], lab["outline"], lab["area"], s)
+        m = tiny_mask(s) if lab.get("font") == "tiny" else small_mask(s, font)
+        draw(img, m, cx, top, lab["fill"], lab["outline"], lab["area"], s)
     return data[:at * 32] + from_img(img, cols) + data[(at + n) * 32:]
 
 

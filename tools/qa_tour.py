@@ -40,11 +40,11 @@ def runs():
         out.append((f"story_{k:02}", f"story_{k:02}", [], 900 + n * (MASH + 20), STORY_BOX))
     for r in (0, 1):
         for a in range(1, 7):
-            out.append((f"boss_r{r}_a{a}", f"boss_r{r}_a{a}", [], 1900, MSG_BOX))
-    for i in range(101):  # after the dialogue, A opens the pause menu: keep the runs short
-        out.append((f"rescue_{i:03}", "rescue", [f"RESCUE_ID={i}"], 1250, MSG_BOX))
+            out.append((f"boss_r{r}_a{a}", f"boss_r{r}_a{a}", ["EXTRA_EVERY=30"], 1900, MSG_BOX))
+    for i in range(101):  # after the dialogue, A opens the pause menu: keep the runs short; a last page can close
+        out.append((f"rescue_{i:03}", "rescue", [f"RESCUE_ID={i}", "EXTRA_EVERY=30"], 1250, MSG_BOX))  # by itself
     for t in (1, 2, 3):
-        out.append((f"tutorial_{t}", f"tutorial_{t}", [], 11000, MSG_BOX))
+        out.append((f"tutorial_{t}", f"tutorial_{t}", ["EXTRA_EVERY=30"], 11000, MSG_BOX))
     return out
 
 
@@ -65,7 +65,7 @@ def run(rom, outdir, item):
         for old in (outdir / "_sheets").glob(f"{name}_[0-9]*.png"):
             old.unlink()
         rc = subprocess.call([sys.executable, "-X", "utf8", str(Path(SKILL) / "scripts" / "sheet.py"), str(d),
-                              "--crop", crop, "--zoom", "2", "--changed", "0.005", "--cols", "3", "--max", "24",
+                              "--crop", crop, "--zoom", "2", "--changed", "0.0002", "--cols", "3", "--max", "24",
                               "--from", "300", "--out", str(outdir / "_sheets" / f"{name}.png")],
                              stdout=subprocess.DEVNULL)
     return name, rc

@@ -4,6 +4,7 @@
     python -X utf8 tools/batches.py check bNNN [bNNN ...]                # OK, or one line per problem
     python -X utf8 tools/batches.py merge bNNN [bNNN ...]                # checked batches -> script/*.json
     python -X utf8 tools/batches.py fit BLOCK "English text"             # how the text wraps, px per line
+    python -X utf8 tools/batches.py rerender                             # en from src for every unit (wrap change)
 
 Authoring form (what translators write, kept in the unit's `src`; build.py reads the rendered `en`):
 - big-font boxes (story, boss, rescue, system, tutorial): plain English; ` // ` = page break (the player presses a
@@ -188,12 +189,32 @@ def px(s):
     return vwf.width(CODE.sub("", s)) + s.count("{name}") * name_width()
 
 
+def balanced(words, lim2, first=224):
+    """Best 2-line split of words (line 2 <= lim2): the longer line as short as possible, so no one-word widow."""
+    best = None
+    for k in range(1, len(words)):
+        a, b = " ".join(words[:k]), " ".join(words[k:])
+        if px(a) <= first and px(b) <= lim2 and (best is None or max(px(a), px(b)) < best[0]):
+            best = (max(px(a), px(b)), [a, b])
+    return best and best[1]
+
+
 def wrap(page, first=224, last=210):
-    """Greedy word wrap of one page; returns lines (may be more than 2: the check reports it)."""
+    """Word wrap of one page; returns lines (may be more than 2: the check reports it). A forced segment that needs
+    2 lines is split evenly (no one-word last line); longer ones wrap greedily."""
     out = []
-    for forced in re.split(r"\s+/\s+|^/\s+", page):
+    segs = re.split(r"\s+/\s+|^/\s+", page)
+    for i, forced in enumerate(segs):
+        words, lim = forced.split(), (last if i == len(segs) - 1 else first)
+        if px(forced.strip()) <= lim or len(words) < 2:
+            out.append(" ".join(words))
+            continue
+        two = balanced(words, lim, first)
+        if two:
+            out += two
+            continue
         cur = ""
-        for w in forced.split():
+        for w in words:
             cand = f"{cur} {w}" if cur else w
             if cur and px(cand) > first:
                 out.append(cur)
@@ -201,9 +222,6 @@ def wrap(page, first=224, last=210):
             else:
                 cur = cand
         out.append(cur)
-    if out and px(out[-1]) > last and len(out[-1].split()) > 1:  # move the last word below the arrow line
-        head, tail = out[-1].rsplit(" ", 1)
-        out[-1:] = [head, tail]
     return out
 
 
@@ -414,6 +432,20 @@ def merge(names):
         print(f"{name}: merged {len(got)} units into {', '.join(sorted(touched))}")
 
 
+def rerender():
+    """Re-render every merged unit's `en` from its `src` (after a wrap change)."""
+    for b in ORDER:
+        doc, n = load(b), 0
+        for e in doc["entries"]:
+            if "src" in e:
+                en = render(b, e["src"], e["jp"])[0]
+                n += en != e["en"]
+                e["en"] = en
+        if n:
+            extract.write_doc(SCRIPT / f"{b}.json", doc)
+            print(f"{b}: {n} units re-rendered")
+
+
 def lint():
     """Problems of every merged unit (src re-rendered); used by tests/test_batches.py."""
     out = []
@@ -433,6 +465,7 @@ def main():
     s.add_argument("--only")
     for c in ("check", "merge"):
         sub.add_parser(c).add_argument("batch", nargs="+")
+    sub.add_parser("rerender")
     f = sub.add_parser("fit")
     f.add_argument("block")
     f.add_argument("text")
@@ -448,6 +481,8 @@ def main():
         sys.exit(1 if bad else 0)
     elif a.cmd == "merge":
         merge(a.batch)
+    elif a.cmd == "rerender":
+        rerender()
     else:
         en, probs = render(a.block, a.text, a.text)
         for k, page in enumerate(en.split(PAGE.get(codec(a.block), "\0"))):
