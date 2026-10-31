@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Keep it to what the next session needs; history is in git.
 
-- **Phase:** phase 2 (debug tool) done 2026-11-01; next is phase 3 (identity build). No build yet.
+- **Phase:** phase 3 (identity build) done 2026-11-01; next is phase 4 (extract). `build.py` builds an identical ROM.
 - **Done:**
   - Step 0: template, MesenCE 2.2.1 + GBA BIOS in `tools/mesen/`, guard hook proven, pre-commit runs `tools/check.py`,
     `rom.sha1` pinned, original ROM smoke-boots.
@@ -18,8 +18,14 @@ Updated at the end of every session. Keep it to what the next session needs; his
     all from cold boot: **78/78 ok**, shots `work/qa/warp/_finals/`, states `work/states/<scene>.mss`, `--ppu` VRAM
     dumps; vramfind summaries `work/qa/vf/` (graphics.md updated). `tools/debug/scenelog.lua` logs state changes.
     Test `tests/test_scenes.py`.
-- **Next (phase 3, identity build):** `build.py` unpack -> repack with no edits, byte-identical to the original, as a
-  test (story scripts + other text tables + fonts/LZ blocks that later phases touch). Then phase 4 extract.
+  - Phase 3 (docs/re/build.md): `build.py` + `tools/blocks.py` unpack/repack 10 packed string tables (incl. 2 in the
+    multiboot client), 4 fixed-record blocks, 36 LZ blocks (fonts + all graphics text) -> byte-identical,
+    `tests/test_identity.py` (also relocation to free space, client overflow error, LZ slot overflow error). `lz77.py`
+    compressor now reproduces all 556 ROM LZ blocks exactly (`min_disp` 1 or 2, `lz77.mode()`). Smoke ok.
+- **Next (phase 4, extract):** `script/*.json` per block from `blocks.py` (`id`, `ptr`, `jp`, `en`, `max`, ...), codecs:
+  story = jp.tbl, msg tables need a menu tbl (FF end, FE newline, FC page, FD xx, F9 xx), tutorial commands, records
+  (names 8 bytes, trade/transfer two 14-byte FF-padded lines with stale tail bytes: keep raw for unchanged). Roundtrip +
+  coverage tests; then build.py reads `en`. Dump must never clobber `en`.
 - **Carry-over (non-blocking):**
   - デビライザー screen not reached: needs a devil in デビルいちらん (debug.md "Not reached yet"). Add a scene when
     the devil-list RAM is found.
