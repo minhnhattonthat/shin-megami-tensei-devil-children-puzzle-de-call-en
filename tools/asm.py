@@ -51,6 +51,10 @@ HOOKS = {
     # DeviDas name: the 8-sprite glyph loop -> dd_name (r5 name, r4 tiles, r6 sprite records), then its epilogue
     0x01D598: ("adds r0, r5, #0\nadds r1, r4, #0\nadds r2, r6, #0\nbl {dd_name}\nb 0x0801D608",
                "0023134884462878fe2825d8"),
+    # DeviDas element sprite 16x16 -> 32x8 (same 4 tiles, DMA and VRAM; English names need 32 px): also set the
+    # horizontal shape bit in attr0. r4 (mask) is dead until 0801CB44, so it is no longer narrowed here.
+    0x01CADA: ("ldrb r0, [r7, #0xb]\nands r0, r4\nmovs r1, #0x40\norrs r0, r1\nstrb r0, [r7, #0xb]\n"
+               "ldrb r0, [r7, #9]\nands r0, r4\norrs r0, r1\nstrb r0, [r7, #9]", "f97a201c084040210843f872787a04407c72"),
     # tutorial box (r7 = struct, r1 = code) -> 08006A5A
     0x0069EC: ("adds r0, r7, #0\nbl {msg_char}\nb 0x08006A5A", "274a3c1c22340023e356"),
     # second message printer (r4 = struct, r1 = code) -> 08006E04

@@ -14,24 +14,31 @@ import vwf  # noqa: E402
 
 
 # ---- 4bpp sprite images (GBA 1D OBJ mapping: tiles row-major, `cols` tiles per row) -------------------------------
-def to_img(data, cols):
-    rows = len(data) // 32 // cols
+def to_img(data, cols, bpp=4):
+    ts = 8 * bpp
+    rows = len(data) // ts // cols
     img = [[0] * (cols * 8) for _ in range(rows * 8)]
-    for t in range(len(data) // 32):
+    for t in range(len(data) // ts):
         for r in range(8):
             for c in range(8):
-                v = data[t * 32 + r * 4 + c // 2]
-                img[(t // cols) * 8 + r][(t % cols) * 8 + c] = (v >> 4) if c & 1 else v & 15
+                if bpp == 8:
+                    v = data[t * 64 + r * 8 + c]
+                else:
+                    v = data[t * 32 + r * 4 + c // 2]
+                    v = (v >> 4) if c & 1 else v & 15
+                img[(t // cols) * 8 + r][(t % cols) * 8 + c] = v
     return img
 
 
-def from_img(img, cols):
-    out = bytearray(len(img) * len(img[0]) // 2)
+def from_img(img, cols, bpp=4):
+    out = bytearray(len(img) * len(img[0]) * bpp // 8)
     for y, row in enumerate(img):
         for x, v in enumerate(row):
             t = (y // 8) * cols + x // 8
-            i = t * 32 + (y % 8) * 4 + (x % 8) // 2
-            out[i] |= v << 4 if x & 1 else v
+            if bpp == 8:
+                out[t * 64 + (y % 8) * 8 + x % 8] = v
+            else:
+                out[t * 32 + (y % 8) * 4 + (x % 8) // 2] |= v << 4 if x & 1 else v
     return bytes(out)
 
 
@@ -104,6 +111,46 @@ LABELS = [
     # pause panel headers (OBJ pal 6, 64x8 strips of 32x8 sprites): white text on orange (13) / grey (8), rows 0-6
     dict(block="hud", at=0x86, tiles=16, cols=8, clear=[(0, 0, 62, 6, 13), (0, 8, 62, 14, 8)], fill=15,
          outline=None, area=(0, 0, 62, 14), text=[("Demon List", 31, 0), ("Demiloc", 31, 8)]),
+    # character select (8bpp BG0, map rows 0-3 = tiles 1-0x78, rows 16-17 = tiles 0x97-0xD2, 30 per row): shaded
+    # plates repainted row by row, text in the VWF font, bold
+    dict(block="charselect", at=1, tiles=120, cols=30, bpp=8, plate=[(45, 6, 196, 17)], font="vwf", bold=True,
+         fill=0x1F, outline=None, area=(45, 5, 196, 19), text=[("Character Select", 120, 7)]),
+    dict(block="charselect", at=0x97, tiles=60, cols=30, bpp=8, plate=[(8, 5, 80, 14), (159, 5, 228, 14)],
+         font="vwf", bold=True, fill=0x12, outline=None, area=(8, 4, 228, 14), text=[("Rand", 44, 5), ("Gale", 193, 5)]),
+    # puzzle mode select (8bpp BG0 of puzzle_select; map E000): banner tiles = map rows 0-2 cols 9-20, brown plate
+    # 0x3F, white 0x7F with a dark 0x31 ring
+    dict(block="puzzle_select", grid=[(0x0A, 12), (0x24, 12), (0x3F, 12)], bpp=8, clear=[(8, 4, 87, 14, 0x3F)],
+         font="vwf", fill=0x7F, outline=0x31, area=(8, 4, 87, 14), text=[("Puzzle Mode", 48, 5)]),
+    # DeviDas (OBJ pal 14): title banner, two 32x16 sprites = tiles 0-15 of bold_kana (light 14, ring 12)
+    dict(block="bold_kana", tiles=16, cols=4, sprites=2, clear=[(0, 0, 63, 15, 0)], font="vwf", bold=True, fill=14,
+         outline=12, area=(0, 0, 63, 15), text=[("Demonary", 32, 2)]),
+    # info labels, one 32x32 sprite (white 1); official DemiKids Class / Type / Align
+    dict(block="devidas_labels", cols=4, clear=[(0, 0, 31, 31, 0)], fill=1, outline=None, left=True,
+         area=(0, 0, 31, 31), text=[("Class", 0, 0), ("Type", 0, 10), ("Align", 0, 21)]),
+] + [
+    # class / type values: 32x16 sprites (8 tiles each), white 1 + shadow 11, left aligned; 5-row caps (GENERAL,
+    # THUNDER: 30 px + shadow)
+    dict(block="devidas_values", at=8 * k, tiles=8, cols=4, clear=[(0, 0, 31, 15, 0)], font="tiny", fill=1,
+         shadow=11, outline=None, left=True, area=(0, 0, 31, 15), text=[(s, 0, 1)])
+    for k, s in enumerate(["COMMON", "ELITE", "GENERAL", "KING", "GOOD", "EVIL", "HOLY", "DRAGON", "BIRD", "BEAST",
+                           "OGRE", "GHOST", "FIEND", "ALT", "ZOMBIE", "BOSS", "MYTH"])
+] + [
+    # align (element): 4 tiles each, drawn as 32x8 (asm hook 0x01CADA turns the 16x16 sprite into 32x8)
+    dict(block="devidas_elements", at=4 * k, tiles=4, cols=4, clear=[(0, 0, 31, 7, 0)], font="tiny", fill=1,
+         shadow=11, outline=None, left=True, area=(0, 0, 31, 7), text=[(s, 0, 1)])
+    for k, s in enumerate(["FIRE", "WATER", "ICE", "THUNDER", "EARTH", "WIND", "LIGHT", "DARK"])
+] + [
+    # race mode banner (8bpp BG1 of race, map E800 rows 0-1 cols 7-21), between the two bullets (the red flourish
+    # under テド goes with the lettering)
+    dict(block="race", grid=[(0x05, 15), (0x1A, 15)], bpp=8, font="vwf", bold=True, fill=0x7E, outline=0x14,
+         clear=[(20, 0, 100, 15, 0x01), (101, 14, 102, 15, 0x01)], area=(20, 0, 99, 15),
+         text=[("Race Mode", 60, 3)]),
+    # difficulty headers, green 0x73 on 0x07, map rows 7-8; ふつう cols 12-17, かんたん cols 2-8, むずかしい cols 21-28
+    # (cols 26 / 27 are tile 0x63 and its mirror: blanked, the text stays in cols 21-25)
+] + [dict(block="puzzle_select", grid=g, bpp=8, erase=((0x73,), 0x07), font="vwf", fill=0x73, outline=None,
+          area=(0, 0, g[0][1] * 8 - 1, 8 * len(g) - 1), text=t)
+     for g, t in [([(0x51, 7), (0x67, 7)], [("Easy", 26, 2)]), ([(0x58, 6), (0x71, 6)], [("Normal", 24, 2)]),
+                  ([(0x5E, 5), (0x7A, 5)], [("Hard", 20, 2)]), ([(0x63, 2)], []), ([(0x7F, 3)], [])]] + [
     # stage HUD labels (OBJ pal 6/7, 32x8 sprites, the count follows at x + 32): white (15) with a black (11) ring
 ] + [dict(block=b, at=at, tiles=n, cols=n, clear=[(0, 0, n * 8 - 1, 7, 0)], font="tiny", fill=15, outline=11,
           area=(0, 0, n * 8 - 1, 7), text=[(s, n * 4 - 1, 1)])
@@ -118,10 +165,29 @@ LABELS = [
 
 
 def edit(lab, data, font):
-    """data with the label's image redrawn."""
+    """data with the label's image redrawn. `grid`: [(first tile, count)] per tile row, for a BG region whose rows
+    are separate tile runs (all rows the same count; replaces at / tiles / cols)."""
+    bpp = lab.get("bpp", 4)
+    ts = 8 * bpp
+    if "grid" in lab:
+        seq = [t for first, n in lab["grid"] for t in range(first, first + n)]
+        sub = {k: v for k, v in lab.items() if k != "grid"}
+        new = edit(dict(sub, at=0, tiles=len(seq), cols=lab["grid"][0][1]),
+                   b"".join(data[t * ts:(t + 1) * ts] for t in seq), font)
+        out = bytearray(data)
+        for i, t in enumerate(seq):
+            out[t * ts:(t + 1) * ts] = new[i * ts:(i + 1) * ts]
+        return bytes(out)
     at, cols = lab.get("at", 0), lab["cols"]
-    n = lab.get("tiles", len(data) // 32 - at)
-    img = to_img(data[at * 32:(at + n) * 32], cols)
+    n = lab.get("tiles", len(data) // ts - at)
+    img = to_img(data[at * ts:(at + n) * ts], cols, bpp)
+    sp = lab.get("sprites", 1)  # several OBJ side by side: their tiles follow each other, so they load stacked
+    h = len(img) // sp
+    img = [sum((img[k * h + y] for k in range(sp)), []) for y in range(h)]
+    for x0, y0, x1, y1 in lab.get("plate", []):  # shaded plates: each row of the rect -> the commonest value of its
+        for y in range(y0, y1 + 1):              # 3 end columns on each side (outside the lettering)
+            ref = img[y][x0:x0 + 3] + img[y][x1 - 2:x1 + 1]
+            img[y][x0:x1 + 1] = [max(ref, key=ref.count)] * (x1 - x0 + 1)
     if "erase" in lab:
         idx, bg = lab["erase"]
         for row in img:
@@ -132,9 +198,15 @@ def edit(lab, data, font):
         for y in range(y0, y1 + 1):
             img[y][x0:x1 + 1] = [bg] * (x1 - x0 + 1)
     for s, cx, top in lab["text"]:
-        m = tiny_mask(s) if lab.get("font") == "tiny" else small_mask(s, font)
+        f = lab.get("font")
+        m = tiny_mask(s) if f == "tiny" else vwf_mask(s, lab.get("bold")) if f == "vwf" else small_mask(s, font)
+        if lab.get("left"):  # cx is the left edge
+            cx += len(m[0]) // 2
+        if "shadow" in lab:  # 1 px to the right, under the text
+            draw(img, m, cx + 1, top, lab["shadow"], None, lab["area"], s)
         draw(img, m, cx, top, lab["fill"], lab["outline"], lab["area"], s)
-    return data[:at * 32] + from_img(img, cols) + data[(at + n) * 32:]
+    img = [r[k * cols * 8:(k + 1) * cols * 8] for k in range(sp) for r in img]
+    return data[:at * ts] + from_img(img, cols, bpp) + data[(at + n) * ts:]
 
 
 # ---- area start cards (outlined_kata 0x2800 + i * 0x400: 128x16 as four 32x16 OBJ, white 15 / ring 6 on a
@@ -167,15 +239,19 @@ def card_banner(cards):
     return out
 
 
-def vwf_mask(s):
-    """Text in fonts/vwf.txt (cap top row 0, baseline row 8, descenders 9-10), 1 px between letters."""
+def vwf_mask(s, bold=False):
+    """Text in fonts/vwf.txt (cap top row 0, baseline row 8, descenders 9-10), 1 px between letters; bold: each
+    glyph smeared 1 px right."""
     g, mask = vwf.glyphs(), [[] for _ in range(11)]
     for i, ch in enumerate(s):
         rows = g[ch]
         w = max(map(len, rows))
         for y in range(11):
             r = rows[y] if y < len(rows) else ""
-            mask[y] += [1 if x < len(r) and r[x] == "#" else 0 for x in range(w)] + ([0] if i < len(s) - 1 else [])
+            px_ = [1 if x < len(r) and r[x] == "#" else 0 for x in range(w)]
+            if bold:
+                px_ = [a | b for a, b in zip(px_ + [0], [0] + px_)]
+            mask[y] += px_ + ([0] if i < len(s) - 1 else [])
     return mask
 
 
@@ -208,10 +284,13 @@ def preview(out, z=3):
     pairs = []
     for lab in LABELS:
         data = blocks.unpack_lz(orig, lab["block"])[0]
-        at, cols = lab.get("at", 0), lab["cols"]
-        n = lab.get("tiles", len(data) // 32 - at)
-        a = to_img(data[at * 32:(at + n) * 32], cols)
-        b = to_img(edit(lab, data, font)[at * 32:(at + n) * 32], cols)
+        at, cols, bpp = lab.get("at", 0), lab["cols"], lab.get("bpp", 4)
+        ts = 8 * bpp
+        n = lab.get("tiles", len(data) // ts - at)
+        a = to_img(data[at * ts:(at + n) * ts], cols, bpp)
+        b = to_img(edit(lab, data, font)[at * ts:(at + n) * ts], cols, bpp)
+        if bpp == 8:  # greyscale by index below: fold 8bpp to 0-15
+            a, b = ([[v >> 4 for v in r] for r in im] for im in (a, b))
         pairs += [ra + [0] * 4 + rb for ra, rb in zip(a, b)] + [[0] * (len(a[0]) * 2 + 4)] * 4
     kata = blocks.unpack_lz(orig, "outlined_kata")[0]
     new = cards(kata)

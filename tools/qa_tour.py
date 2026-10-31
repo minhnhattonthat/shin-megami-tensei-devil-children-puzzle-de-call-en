@@ -5,7 +5,8 @@ text-box contact sheets for visual QA (docs/visual-qa-brief.md).
 
 Each run warps with tools/debug/warp.lua (a scene from tools/debug/scenes.txt, plus RESCUE_ID for the rescues),
 presses A every MASH frames and shoots the frame before each press (tools/debug/pageshots.lua): a press while a page
-types is ignored, so every page appears complete at least once. Sheets: <out>/_sheets/<run>.png (+ _2, _3 ...),
+types is ignored, except that A is held 6 frames and a page that finishes during the hold closes at once, never
+shown complete: reshoot those runs with another `--mash` (e.g. 97) to move the presses. Sheets: <out>/_sheets/<run>.png (+ _2, _3 ...),
 then `qa_gate.py init work/qa/text/manifest.tsv work/qa/text/_sheets`. Exit 1 if a run failed.
 """
 import json
@@ -39,7 +40,7 @@ def runs():
     for k, n in sorted(pages.items()):
         # the warp intro takes ~800 frames and scenes pause between boxes; the extra shots catch a page whose last
         # glyph lands on a press frame
-        out.append((f"story_{k:02}", f"story_{k:02}", ["EXTRA_EVERY=30"], 1800 + n * (MASH + 80), STORY_BOX))
+        out.append((f"story_{k:02}", f"story_{k:02}", ["EXTRA_EVERY=30"], 2400 + n * (MASH + 140), STORY_BOX))
     for r in (0, 1):
         for a in range(1, 7):
             out.append((f"boss_r{r}_a{a}", f"boss_r{r}_a{a}", ["EXTRA_EVERY=30"], 1900, MSG_BOX))
@@ -79,6 +80,8 @@ def main():
     rom = Path(opt("--rom", str(ROOT / "build" / "pdc_en.gba")))
     outdir = Path(opt("--out", str(ROOT / "work" / "qa" / "text")))
     only = re.compile(opt("--only", "."))
+    global MASH
+    MASH = int(opt("--mash", MASH))
     (outdir / "_sheets").mkdir(parents=True, exist_ok=True)
     known = {s[0] for s in warp_all.scenes()}
     todo = [r for r in runs() if only.search(r[0])]
