@@ -40,6 +40,9 @@ RECORDS = {
     "trade": (0x32A7C0, 13, 0x1C),  # link trade messages, table 0x32A92C points at each record
     "transfer": (0x2AB7A4, 5, 0x1C),  # link transfer messages, table 0x32B390
     "devidas_menu": (0x28B0A4, 1, 0x1C),  # DeviDas trade menu fields (00/FF padded), xrefs 0x1C214 / 0x1C218
+    # race mode menu 1カートリッジたいせん / マルチカートリッジたいせん: 30 glyphs DMA'd as 8x8 tiles in a row by 080205FE
+    # (two 15-tile sprite rows, fixed 8 px pitch); found by the marker build, not by strayscan (00-padded, no FF)
+    "race_menu": (0x2AB750, 1, 30),
 }
 
 # LZ77 blocks holding Japanese text (fonts and graphics text, docs/re/graphics.md): name -> offset
@@ -62,6 +65,7 @@ FIELDS = {
     "trade": [(14, 0xFF), (14, 0xFF)],  # two lines
     "transfer": [(14, 0xFF), (14, 0xFF)],
     "devidas_menu": [(5, 0xFF)] * 4 + [(4, 0x00)] * 2,  # キャンセル こうかん あげる もらう (0x1C214); いいえ はい (0x1C218)
+    "race_menu": [(15, 0x00), (15, 0x00)],
 }
 DATA = {"names.162": "placeholder record (8 x 1C), not a name"}  # entries that decode as text but aren't
 # English room where the build moves a record block: names go to 16-byte records (tools/asm.py NAMES, NAME_SIZE)

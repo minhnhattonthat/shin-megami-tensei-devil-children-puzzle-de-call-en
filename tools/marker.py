@@ -20,7 +20,7 @@ import vwf  # noqa: E402
 OUT = ROOT / "build" / "pdc_marker.gba"
 SHORT = {"story": "s", "rescue": "r", "boss": "b", "system": "y", "pause": "p", "yesno": "q", "titlemenu": "t",
          "tutorial": "u", "client_pause": "cp", "client_link": "cl", "names": "N", "trade": "T", "transfer": "X",
-         "devidas_menu": "D"}
+         "devidas_menu": "D", "race_menu": "R"}
 # drawn with the 8 px font (0800B53A), not the VWF; the multiboot client (client_*) has its own code, no VWF, and its
 # strings can't grow past their slot
 SMALL = {"pause", "yesno", "titlemenu", "client_pause", "client_link"}
@@ -84,14 +84,26 @@ def en_map(limit=None):
     return en
 
 
+# glyph torture: every English glyph and a double space over two boxes of two lines (each line <= 224 px):
+# --set story.000.00=TORTURE --set boss.001.00=TORTURE2
+TORTURE = "!\"'(),-.0123456789:;?ABCDEFGHIJ{n}KLMNOPQRSTUVWXYZ abcdefghijklm"
+TORTURE2 = "nopqrstuvwxyz …♥%♪#<>[]_/~+=&*{n}Double  space, the end."
+
+
 def main():
+    """--set ID=TEXT (repeatable) overrides one unit, e.g. --set story.000.00=TORTURE; --out PATH."""
     a = sys.argv[1:]
     limit = int(a[a.index("--fill") + 1]) if "--fill" in a else None
+    out = Path(a[a.index("--out") + 1]) if "--out" in a else OUT
     en = en_map(limit)
+    for i, x in enumerate(a):
+        if x == "--set":
+            k, _, v = a[i + 1].partition("=")
+            en[k] = {"TORTURE": TORTURE, "TORTURE2": TORTURE2}.get(v, v)
     rom = build.build(build.ROM.read_bytes(), en)
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_bytes(rom.out)
-    print(f"{OUT.relative_to(ROOT)}: {len(en)} marker units, free space used {rom.free - blocks.FREE[0]:#x} bytes")
+    out.parent.mkdir(exist_ok=True)
+    out.write_bytes(rom.out)
+    print(f"{out}: {len(en)} marker units, free space used {rom.free - blocks.FREE[0]:#x} bytes")
 
 
 if __name__ == "__main__":
