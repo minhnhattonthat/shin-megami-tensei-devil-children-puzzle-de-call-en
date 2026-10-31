@@ -86,6 +86,10 @@ def test_script_files_are_current(units):
         assert not [e["id"] for e in doc["entries"] if e.get("recheck")], name
 
 
+def test_every_block_has_a_budget(units):
+    assert sorted(units) == sorted(blocks.BUDGET)  # the width gate: no block without window data
+
+
 def test_en_goes_in(orig):
     en = {"pause.000.00": "Back", "story.000.01": "Test{n}Test!{wait:00}{clr}{box:09}One more",
           "rescue.001.00": "{name} joins you.", "trade.000.1": "Yes", "devidas_menu.000.4": "Ye"}

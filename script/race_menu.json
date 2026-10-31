@@ -1,4 +1,4 @@
 {"block": "race_menu", "codec": "msg", "entries": [
-{"id": "race_menu.000.0", "ptr": "2AB750", "jp": "　１カートリッジたいせん", "max": 15, "en": ""},
-{"id": "race_menu.000.1", "ptr": "2AB75F", "jp": "　マルチカートリッジたいせん", "max": 15, "en": ""}
+{"id": "race_menu.000.0", "ptr": "2AB750", "jp": "　１カートリッジたいせん", "max": 16, "en": ""},
+{"id": "race_menu.000.1", "ptr": "2AB760", "jp": "マルチカートリッジたいせん", "max": 14, "en": ""}
 ]}

@@ -42,3 +42,39 @@ and newline write) else `0x8000 | line << 8 | px`; message boxes `+0x23` (was th
 ## Line limits (the width gate)
 See "Measured budgets" below; the wrap check (phase 7) and translators use these px values, measured from zoomed
 shots of the marker build (`tools/marker.py`), never from the Japanese length.
+
+## Measured budgets
+Machine-readable copy: `blocks.BUDGET` (test: every script block has one). Measured 2026-11-01 from the marker build
+(`work/qa/mk`, 78/78 scenes), a menu stress build (`marker.py --out build/pdc_stress.gba --set ID=TEXT`,
+`work/qa/stress`) and the torture build (`work/qa/torture`). x = screen px.
+
+| Variant | Font | Budget | Notes |
+|---|---|---|---|
+| Story box (story) | big | 224 px/line, 2 lines/page; last line of a page 210 px | text x 12-235; page arrow at x 225-230, y of line 2 |
+| Message box (boss, rescue, system) | big | 224 px, 2 lines; last line 210 px | text x 13-236; same arrow; `{name}` counts at its big-font width |
+| Tutorial box (tutorial) | big | 224 px, 2 lines; last line 210 px | as message box (arrow assumed: same printer family) |
+| Pause menu (pause) | small | 48 px | x 184 to the highlight bar's end 232; frame at 236 |
+| Yes/No (yesno) | small | 24 px | x 208-232 |
+| Title / game-over menu (titlemenu) | small | 40 px | x 100-140 (game-over shot) |
+| Demon names (names) | small | 67 px, 15 glyphs | pause lists デビライザー x 88-155, デビルいちらん x 168-236; DeviDas name box x 108-228 (120 px) is roomier; in a message box the name takes its big-font width |
+| Race menu (race_menu) | cell | 12 glyphs per row | not hooked (080205FE): 30 tiles in fixed 8 px cells from x 68, row 1 = bytes 0-15, row 2 = 16-29; a 13th glyph hits the selected row's highlight end, cells 14-16 draw over and past the frame (`work/qa/stress3`). English glyphs sit left in their cell (`R0. 0`): a proportional pen is phase-7 polish |
+| DeviDas trade menu (devidas_menu) | cell | 5 / 4 bytes (slot) | guess: link-only screen, not reachable |
+| Trade / transfer lines, multiboot client strings | cell | 14 bytes / slot | guess: client program, own fixed 8 px printer and untouched font, link-only |
+
+Overflow: menu text is OBJ sprites, so too-long text draws past the frame instead of clipping. The pause screen
+shares one OBJ pool: 3 x 15-glyph names + 16-glyph items ran it dry (the 4th list stopped after 7 glyphs); a
+12-glyph name shows in full in both lists (`work/qa/stress2`). Re-check this screen with the longest real names.
+
+## Marker tour verdict (2026-11-01)
+`build/pdc_marker.gba`, 842 marker units: 78/78 scenes boot (`work/qa/mk`). Independent visual-QA pass (visual-qa
+agent, `work/qa/verdicts/p5_marker.tsv`): no Japanese text left (only graphics), nothing cut by a frame, torture
+lines clean. Its 2 issues, resolved: race menu garbled (wrong record split, fixed: 16 + 14 bytes, `work/qa/mk3`
+shows `R0.0` / `R0.1`); ending_r0 おわり missing (timing: the marker credits type slower; `[s14.32a]` shows at
+frame ~8900, `work/qa/mk3/end3`).
+
+## Torture line
+`marker.py --set story.000.00=TORTURE --set boss.001.00=TORTURE2` -> `build/pdc_torture.gba`. All printable ASCII
+plus `… ♥ % ♪ # < > [ ] _ / ~ + = & *` and a double space render in the story box (`work/qa/torture/s0`) and the
+message box (`work/qa/torture/_finals/boss_r0_a1.png`): every glyph present and distinct, spacing even, double
+space kept. ♥ keeps the Japanese font's pink. The small font's own `q` reads like `9` (game glyph; redraw if a menu
+word needs it).
