@@ -34,6 +34,11 @@ Standing non-bugs, `ok` (the controller adds the game's own below):
   line limit, so a line ending right at the box's inner edge is by design. The issue is a glyph cut by the frame or
   drawn past it. In the last line of a page, the page arrow (x 225-230) overlapping the line's last glyph is known
   (budget 210 px there, docs/re/vwf.md), `ok`.
+- Text tour sheets (`work/qa/text/_sheets`, tools/qa_tour.py): tiles are the text box cropped and zoomed 2x, one
+  shot before each A press. A page caught half-typed is normal (the next tile shows it complete; judge the complete
+  one, but a page that never appears complete is an issue). After the last line the A presses open the pause menu
+  (Back / Undo / ... list) or move its cursor: `ok`. The HUD strip under a message box (てかず, タマゴ, タイム, ライフ)
+  is graphics, a separate task: `ok`. Story boxes: the face sprite at the top edge of the crop is cut by the crop.
 - The yes/no box's `q` (marker id `q0.0`) is the game's own 8x8 `q`, which looks like `9`: `ok`, note it.
 
 ## Verdicts
