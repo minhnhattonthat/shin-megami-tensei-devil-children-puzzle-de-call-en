@@ -50,9 +50,10 @@ def small_mask(s, font, bold=False):
         c = codes[ch]
         px = [[(font[c * 32 + y * 4 + x // 2] >> (4 * (x & 1))) & 15 for x in range(8)] for y in range(8)]
         cols = [x for x in range(8) if any(px[y][x] for y in range(8))]
+        x0 = cols[0] if cols else 0  # glyphs sit at col smallfont.LEFT; labels start at the ink
         w = (cols[-1] + 1 if cols else 2) + bold
         for y in range(8):
-            row = [1 if (x < 8 and px[y][x]) or (bold and x and px[y][x - 1]) else 0 for x in range(w)]
+            row = [1 if (x < 8 and px[y][x]) or (bold and x and px[y][x - 1]) else 0 for x in range(x0, w)]
             mask[y] += row + ([0] if i < len(s) - 1 else [])
     while not any(r[-1] for r in mask):
         for r in mask:

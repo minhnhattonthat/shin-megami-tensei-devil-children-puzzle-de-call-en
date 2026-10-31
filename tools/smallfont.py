@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import vwf  # noqa: E402
 
 SPACE = 3  # advance of the space
+LEFT = 1  # first ink column of every English glyph (col 0 fell outside the menu highlight bar: "Yes" read "Ses")
 
 
 def _get(f, c):
@@ -39,8 +40,10 @@ def build(font, normalize=True):
         if not cols:
             width[c] = SPACE
             continue
-        if normalize and cols[0]:
-            px = [row[cols[0]:] + [0] * cols[0] for row in px]
+        if normalize and cols[0] != LEFT:  # ink from col LEFT: menu highlight bars start 1 px into the tile
+            assert cols[-1] - cols[0] < 8 - LEFT, ch
+            px = [[0] * LEFT + row[cols[0]:] + [0] * cols[0] for row in px]
+            px = [row[:8] for row in px]
             _put(f, c, px)
         width[c] = cols[-1] - cols[0] + 2
     return bytes(f), bytes(width)
