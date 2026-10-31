@@ -1,0 +1,12 @@
+{"block": "transfer", "codec": "msg", "entries": [
+{"id": "transfer.000.0", "ptr": "2AB7A4", "jp": "せつぞくをかくにんしています", "max": 14, "en": ""},
+{"id": "transfer.000.1", "ptr": "2AB7B2", "jp": "・・・・・・・・・・・・・・", "max": 14, "en": ""},
+{"id": "transfer.001.0", "ptr": "2AB7C0", "jp": "ボタンをおせば、てんそうを", "max": 14, "en": ""},
+{"id": "transfer.001.1", "ptr": "2AB7CE", "jp": "はじめます", "max": 14, "en": ""},
+{"id": "transfer.002.0", "ptr": "2AB7DC", "jp": "データをてんそうしています", "max": 14, "en": ""},
+{"id": "transfer.002.1", "ptr": "2AB7EA", "jp": "", "max": 14, "en": ""},
+{"id": "transfer.003.0", "ptr": "2AB7F8", "jp": "エラーがはっせいしました、", "max": 14, "en": ""},
+{"id": "transfer.003.1", "ptr": "2AB806", "jp": "タイトルへもどります", "max": 14, "en": ""},
+{"id": "transfer.004.0", "ptr": "2AB814", "jp": "タイムアウトになりました", "max": 14, "en": ""},
+{"id": "transfer.004.1", "ptr": "2AB822", "jp": "メニューにもどります", "max": 14, "en": ""}
+]}

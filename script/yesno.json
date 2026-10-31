@@ -1,0 +1,4 @@
+{"block": "yesno", "codec": "msg", "entries": [
+{"id": "yesno.000.00", "ptr": "30E460", "jp": "いいえ", "en": ""},
+{"id": "yesno.001.00", "ptr": "30E464", "jp": "はい", "en": ""}
+]}

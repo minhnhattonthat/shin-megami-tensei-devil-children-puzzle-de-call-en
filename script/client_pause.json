@@ -1,0 +1,6 @@
+{"block": "client_pause", "codec": "msg", "entries": [
+{"id": "client_pause.000.00", "ptr": "34FA48", "jp": "キャンセル", "en": ""},
+{"id": "client_pause.001.00", "ptr": "34FA4E", "jp": "もどす", "en": ""},
+{"id": "client_pause.002.00", "ptr": "34FA52", "jp": "やりなおし", "en": ""},
+{"id": "client_pause.003.00", "ptr": "34FA58", "jp": "はじめから", "en": ""}
+]}

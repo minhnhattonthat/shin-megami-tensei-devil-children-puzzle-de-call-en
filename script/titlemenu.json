@@ -1,0 +1,5 @@
+{"block": "titlemenu", "codec": "msg", "entries": [
+{"id": "titlemenu.000.00", "ptr": "30E470", "jp": "はじめから", "en": ""},
+{"id": "titlemenu.001.00", "ptr": "30E476", "jp": "　ロード", "en": ""},
+{"id": "titlemenu.002.00", "ptr": "30E47B", "jp": "　やめる", "en": ""}
+]}

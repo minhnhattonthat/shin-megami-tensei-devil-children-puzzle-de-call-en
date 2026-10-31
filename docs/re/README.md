@@ -15,4 +15,4 @@ Addresses are for the dump in `rom.sha1` unless a note says otherwise.
 | text.md | encoding, font, story script commands + pointer table, sprite text renderer, other text sites, free space | story verified; other text partly mapped |
 | graphics.md | tile-drawn Japanese survey | started (tour only) |
 | debug.md | main loop states, story / stage RAM, event byte, warp points for tools/debug | verified (warp runs) |
-| build.md | block kinds in tools/blocks.py, packing / relocation rules, exact LZ77 recompressor | verified (identity test) |
+| build.md | block kinds in tools/blocks.py, packing / relocation rules, exact LZ77 recompressor, script/*.json units + fields | verified (identity + extract tests) |

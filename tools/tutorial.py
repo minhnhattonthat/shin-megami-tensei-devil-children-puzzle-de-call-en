@@ -10,11 +10,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-from mk_jp_tbl import chars  # noqa: E402
+from mk_jp_tbl import TUT_F8 as F8ARGS, chars  # noqa: E402
 
 TABLE, COUNT = 0x3111F8, 3
-F8ARGS = {0x00: 1, 0x01: 1, 0x02: 2, 0x03: 0, 0x04: 0, 0x05: 2, 0x06: 0, 0x07: 0, 0x08: 0, 0x09: 0, 0x0B: 1,
-          0x0C: 0}
 
 
 def parse(d, off):
