@@ -38,6 +38,20 @@ Updated at the end of every session. Keep it to what the next session needs; his
     (English reuses the kana byte codes); read-back is the text-side leftover check. English tour
     `warp_all.py --rom build/pdc_en.gba --out work/qa/p7`: 78/78 ok (sheets `work/qa/p7/_finals`, no verdicts yet).
     Build sha1 814f33e6..., smoke ok.
+- **Phase 8 in progress (2026-11-01):**
+  - Text tour `tools/qa_tour.py` (story 0-28, boss x12, rescue RESCUE_ID 0-100, tutorial 1-3; warp + A every 120
+    frames, shot before each press + every 30 frames for msg boxes, `tools/debug/pageshots.lua`): cropped 2x sheets
+    in `work/qa/text/_sheets`, gate `work/qa/text/manifest.tsv` + `verdicts/`. Round 1 (`work/qa/text_v1`, old wrap):
+    reviewers flagged only one-word last lines -> `batches.wrap` now splits 2-line segments evenly (0 widows), all
+    units re-rendered (`batches.py rerender`); round 2 tour = current build, needs verdicts (qa_gate todo + visual-qa
+    agents, 25 sheets per chunk).
+  - Graphics text `tools/gfx.py` (LABELS: block / tile range / clear / font / text; `preview OUT.png`; `oam PREFIX
+    DIR` dumps on-screen sprites): done = title menu (STORY PUZZLE RACE DEMONARY), story submenus (NEW GAME /
+    CONTINUE / TUTORIAL, both variants), pause headers (Demon List, Demiloc), stage HUD (MOVES TIME LIFE DEFEATED
+    EGGS, `fonts/tiny.txt` 5-row caps). Grown LZ blocks relocate to free space (word aligned, literal xrefs
+    repointed: `blocks.lz_xrefs`). Rest of docs/re/graphics.md table still Japanese (logo, puzzle/race/DeviDas
+    banners and labels, char select plates, area cards, area banners, puzzle HUD 0x2AADE0, outlined katakana rows).
+  - `build.py --out FILE` builds elsewhere (while a tour reads build/pdc_en.gba).
 - **Next (phase 8, QA):** visual-QA verdicts on the English tour sheets (`work/qa/p7/_finals`, `qa_gate.py init` +
   chunks, fresh read-only pass per chunk since no reviewer agent is started for us), graphics text (docs/re/graphics.md,
   every row English in a zoomed cold-boot shot), re-time warp scenes if shots catch text mid-print, the in-game checks
