@@ -39,6 +39,9 @@ Standing non-bugs, `ok` (the controller adds the game's own below):
   one, but a page that never appears complete is an issue). After the last line the A presses open the pause menu
   (Back / Undo / ... list) or move its cursor: `ok`. The HUD strip under a message box (てかず, タマゴ, タイム, ライフ)
   is graphics, a separate task: `ok`. Story boxes: the face sprite at the top edge of the crop is cut by the crop.
+  Before flagging a page as never shown complete, look at the run's raw frames (`work/qa/text/<sheet id without
+  _N>/f*.png`, full screen): the sheet's change filter can drop a frame that differs by a few pixels.
+  The HUD labels under the box (てかず, タマゴ, タイム, ライフ) are graphics checked separately: `ok` in the text tour.
 - The yes/no box's `q` (marker id `q0.0`) is the game's own 8x8 `q`, which looks like `9`: `ok`, note it.
 
 ## Verdicts

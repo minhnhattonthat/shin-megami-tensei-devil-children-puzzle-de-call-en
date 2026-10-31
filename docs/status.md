@@ -51,7 +51,15 @@ Updated at the end of every session. Keep it to what the next session needs; his
     EGGS, `fonts/tiny.txt` 5-row caps). Grown LZ blocks relocate to free space (word aligned, literal xrefs
     repointed: `blocks.lz_xrefs`). Rest of docs/re/graphics.md table still Japanese (logo, puzzle/race/DeviDas
     banners and labels, char select plates, area cards, area banners, puzzle HUD 0x2AADE0, outlined katakana rows).
+  - Puzzle HUD labels done too (0x2AADE0, 0x219630 added to blocks.LZ). Area start card source found: block
+    0x1C810C (outlined_kata) at 0x2800 + idx*0x400, 128x16 = four 32x16 sprites, DMA'd by 0800E632 from its EWRAM
+    copy (docs/re/graphics.md "Area start card"); six cards: エンゼルの泉, ?コッピア平原 (first kana unclear),
+    ?レクトハ山, タルタロスの樹海, フィーヨルグ雪原 (Fjorgyn Snowfield), クァドリガ (Quadriga). Next: read the unclear
+    names zoomed in game, pick English (Angel Spring, ... Plain, Mt. ..., Tartarus Sea of Trees, Fjorgyn Snowfield,
+    Quadriga), redraw with gfx.py (same outlined style), plus the スタート! part.
   - `build.py --out FILE` builds elsewhere (while a tour reads build/pdc_en.gba).
+  - Text tour round 2 (current wrap; HUD still JP in those shots): 284 sheets, chunks of 30 in
+    `work/qa/text/chunks`, visual-qa agents dispatched per chunk; verdicts in `work/qa/text/verdicts`.
 - **Next (phase 8, QA):** visual-QA verdicts on the English tour sheets (`work/qa/p7/_finals`, `qa_gate.py init` +
   chunks, fresh read-only pass per chunk since no reviewer agent is started for us), graphics text (docs/re/graphics.md,
   every row English in a zoomed cold-boot shot), re-time warp scenes if shots catch text mid-print, the in-game checks
