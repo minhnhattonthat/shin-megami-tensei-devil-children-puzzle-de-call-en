@@ -2,7 +2,7 @@
 
 Updated at the end of every session. Keep it to what the next session needs; history is in git.
 
-- **Phase:** phase 7 (insert, fit, check) done 2026-11-01; next is phase 8 (QA in the emulator). All 837 text units
+- **Phase:** phase 8 (QA) done 2026-11-01; next is phase 9 (release: story pass, polish.md, release script). All 837 text units
   translated (`script/*.json`: `src` = authored English, `en` = rendered with codes), batch check 0 errors,
   reviewer pass on every batch b001-b011 with every Critical/Important fixed (`docs/reviews.md`, incl. the external
   phase 6 review fixes: raw-unit gate, honorific check, whole-word glossary match, rescue.095), Minors in
@@ -38,7 +38,12 @@ Updated at the end of every session. Keep it to what the next session needs; his
     (English reuses the kana byte codes); read-back is the text-side leftover check. English tour
     `warp_all.py --rom build/pdc_en.gba --out work/qa/p7`: 78/78 ok (sheets `work/qa/p7/_finals`, no verdicts yet).
     Build sha1 814f33e6..., smoke ok.
-- **Phase 8 (QA in the emulator), 2026-11-01:**
+- **Phase 8 (QA in the emulator) done 2026-11-01:** build sha1 30fce11a..., smoke ok; `qa_gate.py check` exits 0 on
+  `work/qa/text` (238 boss / rescue / tutorial sheets; its 46 story rows moved out to `manifest.full.tsv`, story is
+  covered by text3), `work/qa/text3` (267 story sheets) and `work/qa/p8` (78 warp scenes + 3 extra shots on the final
+  build, graphics checked English by visual-QA, verdicts `work/qa/p8/verdicts`). Next: phase 9 (release).
+  - Menu font fix from QA: English small-font ink starts at tile col 1 (`smallfont.LEFT`); col 0 fell outside the
+    highlight bars ("Yes" read "Ses", "Back" read "Sack").
   - Text tour `tools/qa_tour.py` (`--only REGEX --mash N --out DIR --jobs N`; no `--help`: unknown args run the
     full tour): story 0-28, boss x12, rescue 0-100, tutorial 1-3; cropped 2x sheets + gate (`qa_gate.py`).
     Round 1-2 (`work/qa/text*`): one-word last lines -> `batches.wrap` splits 2-line segments evenly and prefers a
