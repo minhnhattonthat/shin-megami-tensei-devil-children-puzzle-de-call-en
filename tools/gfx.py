@@ -138,7 +138,8 @@ LABELS = [
 ] + [
     # puzzle stage card (hud_puzzle_obj, 64x16 each): difficulty plate (white 15 on stripes 11 / 6, rows 2-13)
     dict(block="hud_puzzle_obj", at=at, tiles=16, cols=4, sprites=2, font="vwf", bold=True, fill=15, outline=None,
-         clear=[(5, y, 55, y, 11 if y % 2 == 0 else 6) for y in range(2, 14)], area=(5, 2, 55, 13),
+         clear=[(6 if y == 2 else 5, y, 58 if y < 12 else 57, y, 11 if y % 2 == 0 else 6) for y in range(2, 14)],
+         area=(5, 2, 57, 13),
          text=[(s, 31, 3)])
     for at, s in [(0xC2, "Easy"), (0xD2, "Normal"), (0xE2, "Hard")]
 ] + [
@@ -167,8 +168,9 @@ LABELS = [
     # (cols 26 / 27 are tile 0x63 and its mirror: blanked, the text stays in cols 21-25)
 ] + [dict(block="puzzle_select", grid=g, bpp=8, erase=((0x73,), 0x07), font="vwf", fill=0x73, outline=None,
           area=(0, 0, g[0][1] * 8 - 1, 8 * len(g) - 1), text=t)
-     for g, t in [([(0x51, 7), (0x67, 7)], [("Easy", 26, 2)]), ([(0x58, 6), (0x71, 6)], [("Normal", 24, 2)]),
-                  ([(0x5E, 5), (0x7A, 5)], [("Hard", 20, 2)]), ([(0x63, 2)], []), ([(0x7F, 3)], [])]] + [
+     # top row 3: the selected header's cursor frame covers row 2
+     for g, t in [([(0x51, 7), (0x67, 7)], [("Easy", 26, 3)]), ([(0x58, 6), (0x71, 6)], [("Normal", 24, 3)]),
+                  ([(0x5E, 5), (0x7A, 5)], [("Hard", 20, 3)]), ([(0x63, 2)], []), ([(0x7F, 3)], [])]] + [
     # stage HUD labels (OBJ pal 6/7, 32x8 sprites, the count follows at x + 32): white (15) with a black (11) ring
 ] + [dict(block=b, at=at, tiles=n, cols=n, clear=[(0, 0, n * 8 - 1, 7, 0)], font="tiny", fill=15, outline=11,
           area=(0, 0, n * 8 - 1, 7), text=[(s, n * 4 - 1, 1)])
