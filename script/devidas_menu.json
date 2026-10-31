@@ -1,8 +1,8 @@
 {"block": "devidas_menu", "codec": "msg", "entries": [
-{"id": "devidas_menu.000.0", "ptr": "28B0A4", "jp": "キャンセル", "max": 5, "en": ""},
-{"id": "devidas_menu.000.1", "ptr": "28B0A9", "jp": "こうかん", "max": 5, "en": ""},
-{"id": "devidas_menu.000.2", "ptr": "28B0AE", "jp": "あげる　", "max": 5, "en": ""},
-{"id": "devidas_menu.000.3", "ptr": "28B0B3", "jp": "もらう　", "max": 5, "en": ""},
-{"id": "devidas_menu.000.4", "ptr": "28B0B8", "jp": "いいえ", "max": 4, "en": ""},
-{"id": "devidas_menu.000.5", "ptr": "28B0BC", "jp": "はい", "max": 4, "en": ""}
+{"id": "devidas_menu.000.0", "ptr": "28B0A4", "jp": "キャンセル", "max": 5, "en": "Back", "src": "Back"},
+{"id": "devidas_menu.000.1", "ptr": "28B0A9", "jp": "こうかん", "max": 5, "en": "Trade", "src": "Trade"},
+{"id": "devidas_menu.000.2", "ptr": "28B0AE", "jp": "あげる　", "max": 5, "en": "Give", "src": "Give"},
+{"id": "devidas_menu.000.3", "ptr": "28B0B3", "jp": "もらう　", "max": 5, "en": "Get", "src": "Get"},
+{"id": "devidas_menu.000.4", "ptr": "28B0B8", "jp": "いいえ", "max": 4, "en": "No", "src": "No"},
+{"id": "devidas_menu.000.5", "ptr": "28B0BC", "jp": "はい", "max": 4, "en": "Yes", "src": "Yes"}
 ]}

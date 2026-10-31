@@ -35,7 +35,8 @@ ORDER = ["story", "boss", "rescue", "tutorial", "system", "pause", "yesno", "tit
          "trade", "transfer", "client_pause", "client_link", "names"]
 # multiboot / link screens print with fonts that only have the game's own ASCII (docs/re/vwf.md "Not hooked")
 LINK = {"client_pause", "client_link", "trade", "transfer", "devidas_menu", "race_menu"}
-LINK_OK = set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;?!_/~()+-=&* ")
+# … is allowed: the client font still has the Japanese ・ at its code (one dot per …)
+LINK_OK = set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:;?!_/~()+-=&* …")
 FACES = {"A3": "Jin", "A4": "Akira", "00": "Rand", "01": "Gale"}  # face byte 1; other values = demon id (names.NNN)
 CODE = re.compile(r"\{[^}]*\}")
 COL = re.compile(r"\{col:([0-9A-F]{2})\}")
@@ -254,13 +255,14 @@ def problems(name, e, src):
         out.append(f"{len(plain)} chars > {budget} cells")
     if cap and len(blocks.en_table("msg").encode(en)) > cap:
         out.append(f"{len(plain)} chars > {cap}-byte slot")
-    if font == "cell" and not budget and not cap and len(plain) > len(text_len(jp)):
-        out.append(f"{len(plain)} chars > {len(text_len(jp))} (fixed slot)")
+    # cell blocks with no budget (multiboot client strings): the whole block must fit its slot; build.py enforces it
+    words = " ".join(CODE.sub("", s) for s in re.split(r"\{n\}|" + "|".join(map(re.escape, PAGE.values())), en))
+    words = re.sub(r"\s+", " ", words)  # a term the wrap split over two lines still counts
     for term, ens, avoid in glossary():
-        if has_term(jp, term) and ens and not any(a.lower() in plain.lower() for a in ens):
+        if has_term(jp, term) and ens and not any(a.lower() in words.lower() for a in ens):
             out.append(f"glossary: {term} -> {' or '.join(ens)} missing")
         for a in avoid:
-            if re.search(r"\b" + re.escape(a) + r"\b", plain):
+            if re.search(r"\b" + re.escape(a) + r"\b", words):
                 out.append(f"glossary: avoid {a!r}")
     return out
 

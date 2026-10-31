@@ -240,4 +240,11 @@ case-insensitive) must appear in the English, and nothing from Avoid may.
 | いっすんぼうし | Thumurai | | | |
 
 ## Decisions from earlier batches
-- (none yet)
+- b006 あのおかた -> "my lord" (the bosses' unnamed master; never named, keep gender-neutral where possible)
+- b005 ちょぞうこ -> "reservoir" (magic reservoir)
+- b008/b009 石 -> stone, 穴 -> hole, 出っぱり -> the door's arms; ゲームのあそびかた その1 -> How to Play: Part 1;
+  （ボタンを押せばちゅうし） -> (Press a button to skip)
+- b008 ケツアルコアトル (variant spelling in rescue.066) -> Quetza, same demon as ケツアルカトル
+- b008 コンゴトモヨロシク -> "I look forward to our time together..."
+- b010 pause menu: Cancel, Undo, Map, Demiloc, Retry, Restart, Quit, Save; title: Start, Load, Quit
+- b011 ending: おわり -> The End (centred by hand, raw `=` units)
