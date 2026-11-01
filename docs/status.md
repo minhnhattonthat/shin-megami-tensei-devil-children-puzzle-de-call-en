@@ -10,7 +10,7 @@ Updated at the end of every session. Keep it to what the next session needs; his
   stress and every active visual/story gate. BPS and ZIP reapplication both reproduce the exact final ROM.
   Local archive: `release/Devil_Children_Puzzle_de_Call_EN_v1.0.zip` (BPS + README only),
   SHA-1 `d7ec8a2bb63d93d98f4652b7b2ab48f21fe91264`. Full results: `docs/release-review.md`.
-  No GitHub release was created and repository visibility is unchanged.
+  Published 2026-11-01 (D10): repo public, GitHub release v1.0 with this ZIP.
   Rescue tour correction: the old demon-ID sweep missed 19 dialogue IDs; new lookup-driven tour covers every
   rescue.001..100 plus shared rescue.000, with runtime pointer logging (`tools/debug/textlog.lua`).
   All 837 text units
@@ -90,7 +90,7 @@ Updated at the end of every session. Keep it to what the next session needs; his
   all ten active QA manifests and the polish checklist pass again. Fresh cold boot passes in
   `work/qa/completion_smoke`. The existing ZIP and standalone BPS were checked without repackaging;
   applying the archived patch to the pinned original reproduces the final ROM hash above exactly.
-- **Next:** none for this run; the verified local release is ready for owner use. Publishing remains a separate action.
+- **Next:** none; v1.0 published. Handle player bug reports from GitHub issues.
 - **Open bugs:** none known after final visual review; untested configurations are disclosed above.
 - **Waiting on the user:** nothing. (GUI keyboard check of `tools/mesen/Mesen.exe` not done: headless session; harmless.)
   Race mode and link trade need a second GBA (link cable): only the waiting screen is reachable.

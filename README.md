@@ -3,7 +3,7 @@
 Unofficial English fan translation of the Game Boy Advance puzzle game published by Atlus in 2002.
 This repository contains the translation and tools for building a patch. It contains no playable game ROM.
 
-The release archive is built locally; no release is published automatically. Apply its BPS patch to your own
+Download the patch ZIP from [Releases](../../releases/latest). Apply its BPS patch to your own
 clean Japanese dump, following the included README, then cold-boot the patched game. Do not load old savestates.
 
 | Part | Status |
