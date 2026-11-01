@@ -287,6 +287,33 @@ def cards(data):
     return data
 
 
+# ---- map area plates (area_1..6: 80x16 = OBJ 32x16 + 32x16 + 16x16, top right of the world map). Dark ink 1 with
+# shade 2/4/8 on plate 13; the emblem (rows 0-5) stays. 76 px inside: the two long names lose their common noun.
+PLATES = ["Embel Spring", "Lucoppia Plain", "Plekt Volcano", "Tartarus", "Fjorgyn", "Quadriga"]
+
+
+def plate_img(d):
+    a, b, c = to_img(d[:256], 4), to_img(d[256:512], 4), to_img(d[512:640], 2)
+    return [a[y] + b[y] + c[y] for y in range(16)]
+
+
+def plate_bytes(img):
+    return (from_img([r[:32] for r in img], 4) + from_img([r[32:64] for r in img], 4)
+            + from_img([r[64:] for r in img], 2))
+
+
+def plate(d, s):
+    img = plate_img(d)
+    for y in range(5, 14):
+        for x in range(1, 79):
+            if img[y][x] in (1, 2, 4, 8):
+                img[y][x] = 13
+    m = vwf_mask(s)[:10]  # descenders 1 px short: row 14 is the frame
+    draw(img, m, 41, 4, 8, None, (2, 4, 77, 13), s)  # shade 1 px right
+    draw(img, m, 40, 4, 1, None, (2, 4, 77, 13), s)
+    return plate_bytes(img)
+
+
 def apply(lz):
     """lz = {block: (data, min_disp, end)} from blocks.unpack_lz, edited in place (font_small already English)."""
     font = lz["font_small"][0]
@@ -295,6 +322,9 @@ def apply(lz):
         lz[lab["block"]] = (edit(lab, data, font), md, end)
     data, md, end = lz["outlined_kata"]
     lz["outlined_kata"] = (cards(data), md, end)
+    for i, s in enumerate(PLATES):
+        data, md, end = lz[f"area_{i + 1}"]
+        lz[f"area_{i + 1}"] = (plate(data, s), md, end)
 
 
 def preview(out, z=3):

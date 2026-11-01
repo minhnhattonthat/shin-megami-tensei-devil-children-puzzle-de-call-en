@@ -71,14 +71,15 @@ Updated at the end of every session. Keep it to what the next session needs; his
     stage card (Easy / Normal / Hard, Stage), char select, puzzle select banner + headers, race banner, DeviDas
     banner / labels / values / elements (official DemiKids terms; element sprite 16x16 -> 32x8 hook 0x1CADA).
     All checked in game (`work/qa/g14`-`g18`, `work/qa/cards`). Kept JP: title logo (D5: no official English logo),
-    the six area_N plates (loaded, never seen on screen), unreferenced LZ twin 0x2AADE0. Clear!! not seen in game
+    unreferenced LZ twin 0x2AADE0. The six area_N plates turned out to be the world-map labels: English since
+    2026-11-01 (`work/qa/plate_story_04`), released as v1.0.1 (D11). Clear!! not seen in game
     (no reachable floor-clear call-out); same format as Start!, which renders right.
   - Pause map / Demiloc / save prompt / game over menu: English (`work/qa/g12/_finals`).
 - **Carry-over (non-blocking):**
   - Link trade, multiboot-client gameplay and two-GBA races remain untested; their text is translated but layout
     budgets are conservative slot limits. Fixed-cell race-menu text has wide spacing.
   - Original-game save migration, other emulators and real hardware are not certified.
-  - Japanese title logo, six unobserved area plates and an unreferenced puzzle-label duplicate are retained;
+  - Japanese title logo and an unreferenced puzzle-label duplicate are retained;
     translated Clear!! is not observed in-game. See the release README for these disclosed limits.
 - **Phase 9 QA corrections:** boss HUD interior pointer relocated; actual rescue-message mapping now covers
   all 100 messages; automatic tutorials run without button presses and require completion markers. The older

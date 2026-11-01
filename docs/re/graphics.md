@@ -67,8 +67,9 @@ The hud and hud_puzzle_obj blocks grow when recompressed: they move to free spac
 per-pixel majority of the six originals away from the lettering, English in fonts/vwf.txt, white 15 with ring 6.
 Names from the JP atwiki (devilchildren_pdc), glossary.md Places. Checked in game: `work/qa/cards/_finals`.
 スタート! shows ~2 s after the card: hud tiles 0x68-0x77 (table above). Checked in game: `work/qa/g18`.
-The six area_N plates (0x28A59C...) load into OBJ VRAM in every story scene (loop at 0801A760) but no visible sprite
-used them in the 32 story / ending warp dumps, and none showed in the story_02 tour frames: left JP (unconfirmed).
+The six area_N plates (0x28A59C...) are the world-map labels (top right, between story scenes; player report
+2026-11-01, warp story_04). 80x16 = OBJ 32x16 + 32x16 + 16x16; redrawn by `gfx.plate` (PLATES), vwf font, ink 1 + shade 8.
+76 px inside: Tartarus / Fjorgyn drop "Sea of Trees" / "Snowfield". Checked: `work/qa/plate_story_04`.
 
 ## Not checked / weak spots (do in phase 2 / 8 with the debug tool)
 - Phase 2 (2026-11-01): every screen below is now a warp scene (`tools/debug/scenes.txt`), VRAM dumps from

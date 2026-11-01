@@ -34,8 +34,9 @@ Known limitations
   Link trade, multiboot client gameplay and two-GBA races need a link partner.
   Link-only layout budgets are conservative slot limits, not runtime proofs.
   The original fixed-cell race menu has wide English letter spacing.
-  Six unobserved story-area plate assets and an unreferenced duplicate of the
-  puzzle record labels retain Japanese. The Clear!! asset is translated but
+  An unreferenced duplicate of the puzzle record labels retains Japanese.
+  World-map labels shorten two names to fit: Tartarus, Fjorgyn.
+  The Clear!! asset is translated but
   its floor-clear call-out has not been observed during the debug tours.
   Existing Japanese-game saves and save migration have not been certified.
 
