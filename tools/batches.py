@@ -230,6 +230,10 @@ def wrap(page, first=224, last=210):
 def page_problems(k, lines, cd):
     """Limits of one big-font page: 2 lines, 224 px (the last 210: the page arrow), msg sprite cap."""
     probs = []
+    visible = [CODE.sub("", ln.replace("{name}", "NAME")).strip() for ln in lines]
+    # A blank positioning line before a single ending utterance isn't a paragraph.
+    if sum(bool(ln) for ln in visible) > 1 and len(visible[-1]) < 6:
+        probs.append(f"page {k + 1} has a short last line: {visible[-1]!r}")
     if len(lines) > LINES_PER_PAGE:
         probs.append(f"page {k + 1} needs {len(lines)} lines (max 2 per page): add a ' // ' page break or "
                      f"rephrase: {' | '.join(lines)}")
@@ -274,6 +278,23 @@ def codes_of(s):
     return sorted(c for c in CODE.findall(s) if c != "{n}")
 
 
+def boundaries(s):
+    """Visible outer blanks; placeholders occupy a glyph position, formatting codes do not."""
+    visible = CODE.sub("", s.replace("{name}", "X"))
+    return [len(visible) - len(visible.lstrip()), len(visible) - len(visible.rstrip())]
+
+
+def spacing_problems(e, en):
+    jp_space, en_space = boundaries(e["jp"]), boundaries(en)
+    if jp_space == en_space:
+        return []
+    exceptions = json.loads((ROOT / "script" / "layout_exceptions.json").read_text(encoding="utf-8"))
+    exception = exceptions.get(e.get("id"))
+    if exception and exception["jp"] == jp_space and exception["en"] == en_space and exception["reason"]:
+        return []
+    return [f"boundary spacing differs: JP {jp_space} vs EN {en_space}"]
+
+
 def problems(name, e, src):
     """Every rule the unit's authored English breaks."""
     jp, out = e["jp"], []
@@ -283,6 +304,7 @@ def problems(name, e, src):
         out.append("tab or backslash in the English")
     en, out2 = render(name, src, jp)
     out += out2
+    out += spacing_problems(e, en)
     plain = CODE.sub("", en)
     bad = sorted({c for c in plain if c not in vwf.en_codes()})
     if bad:

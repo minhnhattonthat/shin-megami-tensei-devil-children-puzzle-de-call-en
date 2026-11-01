@@ -72,3 +72,22 @@ def test_missing_record_and_empty_original(monkeypatch):
     assert any("missing English" in p for p in batches.lint())
     monkeypatch.setattr(batches, "entries", lambda: [("trade", {"id": "trade.empty", "jp": "", "en": ""})])
     assert batches.lint() == []
+
+
+def test_short_last_line():
+    entry = {"jp": "テスト"}
+    assert any("short last line" in p for p in batches.problems("system", entry, "=A complete thought{n}now."))
+    assert any("short last line" in p for p in batches.problems("system", entry, "A complete thought / now."))
+    assert not batches.page_problems(0, ["", "     Yeah."], "story")
+    assert not batches.page_problems(0, ["Yeah."], "story")
+    assert not batches.page_problems(0, ["A complete thought", "follows here."], "story")
+
+
+def test_boundary_spacing():
+    assert batches.spacing_problems({"jp": "　テスト　"}, "Test")
+    assert not batches.spacing_problems({"jp": "　テスト　"}, " Test ")
+    assert not batches.spacing_problems({"jp": "{name}テスト"}, "{name} joined")
+    assert not batches.spacing_problems({"jp": "{col:03}　テスト　"}, "{col:03} Test ")
+    _, e = batches.by_id()["titlemenu.001.00"]
+    assert not batches.spacing_problems(e, "Load")
+    assert batches.spacing_problems(e, "  Load")

@@ -65,6 +65,8 @@ def en_map():
     """{unit id: en} for every translated unit in script/*.json (what build.py inserts)."""
     out = {}
     for path in sorted(SCRIPT.glob("*.json")):
+        if path.name == "layout_exceptions.json":
+            continue
         for e in load(path)["entries"]:
             if e.get("en"):
                 if "data" in e:

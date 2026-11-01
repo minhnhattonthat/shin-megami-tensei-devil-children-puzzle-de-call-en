@@ -59,6 +59,8 @@ def allowed(orig, used_free):
     out += [(blocks.FREE[0], used_free, "free space"), (asm.ENGINE, asm.END, "engine")]
     out += [r for s, lit in asm.NAME_SITES for r in ((s, s + 2, "names x16"), (lit, lit + 4, "names ptr"))]
     out += [(asm.NAME_162, asm.NAME_162 + 4, "name 162 ptr")]
+    shift, lit, _ = asm.NAME_BOSS
+    out += [(shift, shift + 2, "boss HUD names x16"), (lit, lit + 4, "boss HUD names ptr")]
     out += [(o, o + len(b) // 2, "hook") for o, (_, b) in asm.HOOKS.items()]
     return out
 

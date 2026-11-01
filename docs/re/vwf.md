@@ -63,7 +63,10 @@ Machine-readable copy: `blocks.BUDGET` (test: every script block has one). Measu
 
 Overflow: menu text is OBJ sprites, so too-long text draws past the frame instead of clipping. The pause screen
 shares one OBJ pool: 3 x 15-glyph names + 16-glyph items ran it dry (the 4th list stopped after 7 glyphs); a
-12-glyph name shows in full in both lists (`work/qa/stress2`). Re-check this screen with the longest real names.
+12-glyph name shows in full in both lists (`work/qa/stress2`). Phase 9 checked the final ROM with every visible
+name slot replaced by the longest real English name, Jack Frost (10 glyphs): all three Demiloc names, the
+Demon List name and every pause-menu item remain complete (`work/qa/name_stress/final.png`, host-only
+`tools/debug/name_stress.lua`).
 
 ## Marker tour verdict (2026-11-01)
 `build/pdc_marker.gba`, 842 marker units: 78/78 scenes boot (`work/qa/mk`). Independent visual-QA pass (visual-qa
@@ -78,3 +81,16 @@ plus `… ♥ % ♪ # < > [ ] _ / ~ + = & *` and a double space render in the st
 message box (`work/qa/torture/_finals/boss_r0_a1.png`): every glyph present and distinct, spacing even, double
 space kept. ♥ keeps the Japanese font's pink. The small font's own `q` reads like `9` (game glyph; redraw if a menu
 word needs it).
+
+## Phase 9 boss HUD correction
+
+The boss HUD at 0800E5E8 used an interior name-table pointer, 0830E78C (name 96), missed by the original
+base-address scan. It still loaded Japanese codes B3 F1 BF EF for Crosel; their English width-table entries
+were zero, so all four sprites appeared at x=136. The 8-byte stride is now 16 and the interior pointer goes to
+`NAMES + 96 * NAME_SIZE`. All twelve HUD names share this reader. `tests/test_name_references.py` scans every
+aligned ROM literal into the complete old name-table range, including interior pointers.
+
+Cold-boot runtime probe: `tools/debug/hud_check.lua`, boss_r0_a1, 1800 frames, mash 120. Original ROM uses
+8-pixel spacing; pre-fix English logs `HUD_CHECK FAIL glyphs=4` (`work/qa/hud_red/log.txt`); corrected English
+logs `HUD_CHECK PASS glyphs=6` (`work/qa/hud_green/log.txt`), with x=136,143,148,154,160,166. The final image
+shows Crosel clearly. This is a pointer/stride fix, not a fallback width for unreachable Japanese glyphs.

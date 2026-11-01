@@ -2,7 +2,18 @@
 
 Updated at the end of every session. Keep it to what the next session needs; history is in git.
 
-- **Phase:** phase 8 (QA) done 2026-11-01; next is phase 9 (release: story pass, polish.md, release script). All 837 text units
+- **Phase:** phase 9 (local release) complete 2026-11-01: phase 7 Important fixed and committed (`f41ab0e`),
+  both review Minors implemented, 56 line-specific polish edits, all seven chapters approved in a fresh read-only
+  Codex pass (`docs/story-review.md`). The final boss HUD fix has red/green runtime evidence and an all-ROM
+  literal regression scan. Final ROM `bd858d3c1f07e0e1516de1f9185cd87e5a22fcc5` passes 43 tests, cold boot,
+  78 scene warps, the 144-run dialogue tour, three fully completed automatic tutorials, longest-real-name pause
+  stress and every active visual/story gate. BPS and ZIP reapplication both reproduce the exact final ROM.
+  Local archive: `release/Devil_Children_Puzzle_de_Call_EN_v1.0.zip` (BPS + README only),
+  SHA-1 `d7ec8a2bb63d93d98f4652b7b2ab48f21fe91264`. Full results: `docs/release-review.md`.
+  No GitHub release was created and repository visibility is unchanged.
+  Rescue tour correction: the old demon-ID sweep missed 19 dialogue IDs; new lookup-driven tour covers every
+  rescue.001..100 plus shared rescue.000, with runtime pointer logging (`tools/debug/textlog.lua`).
+  All 837 text units
   translated (`script/*.json`: `src` = authored English, `en` = rendered with codes), batch check 0 errors,
   reviewer pass on every batch b001-b011 with every Critical/Important fixed (`docs/reviews.md`, incl. the external
   phase 6 review fixes: raw-unit gate, honorific check, whole-word glossary match, rescue.095), Minors in
@@ -44,7 +55,7 @@ Updated at the end of every session. Keep it to what the next session needs; his
 - **Phase 8 (QA in the emulator) done 2026-11-01:** build sha1 30fce11a..., smoke ok; `qa_gate.py check` exits 0 on
   `work/qa/text` (238 boss / rescue / tutorial sheets; its 46 story rows moved out to `manifest.full.tsv`, story is
   covered by text3), `work/qa/text3` (267 story sheets) and `work/qa/p8` (78 warp scenes + 3 extra shots on the final
-  build, graphics checked English by visual-QA, verdicts `work/qa/p8/verdicts`). Next: phase 9 (release).
+  build, graphics checked English by visual-QA, verdicts `work/qa/p8/verdicts`). Superseded by phase 9 above.
   - Menu font fix from QA: English small-font ink starts at tile col 1 (`smallfont.LEFT`); col 0 fell outside the
     highlight bars ("Yes" read "Ses", "Back" read "Sack").
   - Text tour `tools/qa_tour.py` (`--only REGEX --mash N --out DIR --jobs N`; no `--help`: unknown args run the
@@ -64,18 +75,18 @@ Updated at the end of every session. Keep it to what the next session needs; his
     (no reachable floor-clear call-out); same format as Start!, which renders right.
   - Pause map / Demiloc / save prompt / game over menu: English (`work/qa/g12/_finals`).
 - **Carry-over (non-blocking):**
-  - Race menu printer (080205FE) is fixed 8 px cells, English glyphs sit left in their cell (`R0. 0`): proportional
-    pen or a centred copy of the font there = phase 7 polish. Race needs a link partner; only the menu is reachable.
-  - Pause screen OBJ pool: very long names in all lists + long items ran it dry in a stress build; re-check with the
-    longest real names after translation (docs/re/vwf.md).
-  - Small font `q` looks like `9` (game glyph); redraw if a menu word needs `q`.
-  - Multiboot client strings (client_*, trade, transfer) and devidas_menu: link-only, budgets are slot guesses.
-  - デビライザー screen not reached (needs a devil in デビルいちらん); つづきから / save-file screens need a .sav fixture.
-  - Warp scenes are timed for Japanese; marker / English text types slower (ending_r0 needs ~9000 frames to reach
-    おわり). Re-time scenes in phase 8 if shots catch text mid-print.
-  - In-game checks the reviewers asked for: boss.000 "{name}, let's go!!!" (who is {name}?), rescue.025 (symbols
-    line), tutorial pages with many colour runs, ending centring (story.014.31 / 028.34), title "Start" at 40 px.
-  - Client pause block is exactly full (24 bytes: Back / Undo / Retry / Stage 1).
-- **Open bugs:** none.
+  - Link trade, multiboot-client gameplay and two-GBA races remain untested; their text is translated but layout
+    budgets are conservative slot limits. Fixed-cell race-menu text has wide spacing.
+  - Original-game save migration, other emulators and real hardware are not certified.
+  - Japanese title logo, six unobserved area plates and an unreferenced puzzle-label duplicate are retained;
+    translated Clear!! is not observed in-game. See the release README for these disclosed limits.
+- **Phase 9 QA corrections:** boss HUD interior pointer relocated; actual rescue-message mapping now covers
+  all 100 messages; automatic tutorials run without button presses and require completion markers. The older
+  tutorial-labelled text sheets actually skipped into the prologue and are superseded by `tutorial_final`.
+  Full 144-run final-ROM capture is complete; final scene gate 85/85 and no-input tutorial gate 56/56 pass.
+  Longest-real-name pause stress, boss.000 substitution, Mecci's symbols and ending centring are checked.
+  Capture-only punctuation gaps have complete-page reshoot evidence in `work/qa/final_evidence`.
+- **Next:** none for this run; the verified local release is ready for owner use. Publishing remains a separate action.
+- **Open bugs:** none known after final visual review; untested configurations are disclosed above.
 - **Waiting on the user:** nothing. (GUI keyboard check of `tools/mesen/Mesen.exe` not done: headless session; harmless.)
   Race mode and link trade need a second GBA (link cable): only the waiting screen is reachable.

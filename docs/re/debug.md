@@ -51,3 +51,30 @@ Everything below is **verified** by the warp runs (logs in `work/qa/warp/<scene>
 - Save-file screens (つづきから with a save, the in-stage セーブ result), DeviDas sub-screens, puzzle-mode "all
   stages" run (B78 bit 7), floor result 4. Demon rescue texts: one scene (`rescue`, RESCUE_ID=5); the text tour
   (phase 8) can loop RESCUE_ID over all demons.
+# Phase 9 rescue coverage correction
+
+`RESCUE_ID` is a demon ID, not an index in `script/rescue.json`. At 0800AF78 the game loads
+`ROM[0x1626A5 + 2 * demon] + 1` and uses that as the rescue pointer-table index. The previous 0..100 demon
+sweep omitted message IDs 22, 38, 77, 82, 84-92, 94, 95, 97-100. `qa_tour.rescue_targets()` now chooses one
+valid demon per message 1..100; message 0 is the common join line after each rescue. New runs are named
+`rescue_text_NNN`; the old `rescue_NNN` directories remain evidence of demon IDs, not message IDs.
+
+`tools/debug/textlog.lua` logs the pointer actually passed to 080060CC. Rescue runs fail if the expected message
+ID is absent. Examples: demon 4 Mecci -> message 25 (symbols), 33 Quetza -> 66, 83 Teskarot -> 67.
+The normal boss selector at 080120D6 adds one and selects messages 1..12, not boss.000. The dormant boss.000
+call-out uses the same `{name}` reader at 080062A4 and the demon-ID byte at `[03002BDC] + 158D` as rescues.
+The opt-in `TEST_BOSS_ZERO=1` probe in textlog.lua selects it through the normal printer and `NAME_ID` sets
+the substituted demon for inspection. These scripts run only on the emulator host, never inside the release ROM.
+
+## Phase 9 tutorial coverage correction
+
+Any button skips the automatic tutorial. The old text tour used mash 120, skipped at frame 361 and then
+captured the prologue; those tutorial-labelled sheets are not tutorial coverage. `qa_tour.py` now uses no
+input, captures every 30 frames, and loads `tutorial_check.lua`. The host probe sets the requested part at
+0800F52E, checks its pointer at 08006450 and requires the terminal FF opcode with no active name expansion
+at 08006934. On the final ROM the three parts finish at frames 16101, 12769 and 12168, respectively.
+All 56 complete-demo sheets in `work/qa/tutorial_final` were reviewed, including colored text and punctuation.
+The release gate requires their ROM receipt and all three `TUTORIAL_DONE` markers.
+
+Story captures use mash 97 independently of the other modes; `--story-mash 83` is available for punctuation
+reshoots. The final script's full scene is reviewed separately when a short scene capture begins its successor.

@@ -1,0 +1,19 @@
+{
+  "story.014.31": {"jp": [1, 0], "en": [8, 0], "reason": "Ending dialogue recentered for proportional English; p8 ending shot."},
+  "story.014.32": {"jp": [5, 0], "en": [23, 0], "reason": "The End recentered for proportional English; p8 ending shot."},
+  "story.028.34": {"jp": [3, 0], "en": [18, 0], "reason": "Ending dialogue recentered for proportional English; p8 ending shot."},
+  "story.028.35": {"jp": [5, 0], "en": [23, 0], "reason": "The End recentered for proportional English; p8 ending shot."},
+  "rescue.025.00": {"jp": [0, 1], "en": [0, 0], "reason": "Terminal blank after symbol utterance has no concatenated text or cursor."},
+  "titlemenu.001.00": {"jp": [1, 0], "en": [0, 0], "reason": "Load starts at English menu text origin inside highlight, checked in p8."},
+  "titlemenu.002.00": {"jp": [1, 0], "en": [0, 0], "reason": "Quit starts at English menu text origin inside highlight, checked in p8."},
+  "devidas_menu.000.2": {"jp": [0, 1], "en": [0, 0], "reason": "Original trailing glyph blank fills the fixed field; English record padding remains the packer's responsibility."},
+  "devidas_menu.000.3": {"jp": [0, 1], "en": [0, 0], "reason": "Original trailing glyph blank fills the fixed field; English record padding remains the packer's responsibility."},
+  "race_menu.000.0": {"jp": [1, 0], "en": [0, 0], "reason": "English label uses its fixed-cell origin; race waiting menu checked in p8."},
+  "client_link.000.00": {"jp": [8, 0], "en": [4, 0], "reason": "Hand-laid English link message, recentered within the original client screen slot."},
+  "client_link.001.00": {"jp": [8, 0], "en": [4, 0], "reason": "Hand-laid English link message, recentered within the original client screen slot."},
+  "client_link.002.00": {"jp": [8, 0], "en": [4, 0], "reason": "Hand-laid English link message, recentered within the original client screen slot."},
+  "client_link.003.00": {"jp": [8, 0], "en": [4, 0], "reason": "Hand-laid English link message, recentered within the original client screen slot."},
+  "client_link.004.00": {"jp": [8, 0], "en": [4, 0], "reason": "Hand-laid English link message, recentered within the original client screen slot."},
+  "client_link.005.00": {"jp": [5, 0], "en": [0, 0], "reason": "Two full-width English instructions fit without Japanese indentation; link-only runtime remains unverified."},
+  "client_link.006.00": {"jp": [5, 0], "en": [0, 0], "reason": "Two full-width English instructions fit without Japanese indentation; link-only runtime remains unverified."}
+}

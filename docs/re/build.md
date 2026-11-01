@@ -49,6 +49,10 @@ a reasoned ID in `script/keep_jp.txt` (currently no exceptions). Final ROM verif
 original ROM, including all names and fixed-record fields, so deleting an entry from the English map fails.
 `verify(..., mode="identity")` and `mode="partial"` are explicit test-only alternatives; normal builds use `final`.
 Uniform hint colour codes are checked at each rendered line start, not by the Japanese line count.
+Phase 9 also closes review Minors #2/#3: a multi-line paragraph may not end in fewer than six visible characters
+(an intentionally blank positioning line before a single utterance is allowed). Outer boundary blanks are
+compared after removing formatting codes while retaining name placeholders as occupied positions. Exact reviewed
+JP/EN boundary counts and reasons live in `script/layout_exceptions.json`; record padding still belongs to the packer.
 
 `build.verify` runs on every `build.py` (nothing is written when it fails) and in the test, on an in-memory build:
 - `romdiff.check` with the write log (`build/writes.txt`, every write through `blocks.Rom.put`): each write's

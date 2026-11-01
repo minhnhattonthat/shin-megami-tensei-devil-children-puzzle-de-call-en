@@ -30,6 +30,7 @@ NAME_SITES = [(0x62A4, 0x62BC), (0x69D2, 0x69E8), (0x6D7C, 0x6D94), (0xC2B6, 0xC
               (0xC772, 0xC79C), (0xC7A0, 0xC810), (0xE022, 0xE04C), (0xE050, 0xE068), (0xE16A, 0xE194),
               (0xE198, 0xE1B0), (0x1D586, 0x1D5E4)]
 NAME_162 = 0xC344  # literal 0830E99C: name 162 (the 8 x 1C placeholder)
+NAME_BOSS = (0xE5E8, 0xE608, 96)  # HUD indexes names 96..107 through an interior table pointer
 
 # hook site (file offset): (asm, original bytes it replaces: checked so a wrong ROM or a moved hook fails loudly)
 HOOKS = {
@@ -119,6 +120,11 @@ def apply(rom, names):
         rom.put(lit, struct.pack("<I", NAMES + ROM_BASE), "names ptr")
     assert struct.unpack_from("<I", rom.orig, NAME_162)[0] == 0x0830E99C
     rom.put(NAME_162, struct.pack("<I", NAMES + 162 * NAME_SIZE + ROM_BASE), "name 162 ptr")
+    shift, lit, first = NAME_BOSS
+    assert rom.orig[shift:shift + 2] == bytes.fromhex("c900")
+    assert struct.unpack_from("<I", rom.orig, lit)[0] == 0x0830E48C + first * 8
+    rom.put(shift, bytes.fromhex("0901"), "boss HUD names x16")
+    rom.put(lit, struct.pack("<I", NAMES + first * NAME_SIZE + ROM_BASE), "boss HUD names ptr")
     for off, (src, orig) in HOOKS.items():
         b = _asm(src.format(**labels), off + ROM_BASE)
         if rom.orig[off:off + len(b)] != bytes.fromhex(orig)[:len(b)] or len(b) > len(orig) // 2:
