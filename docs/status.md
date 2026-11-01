@@ -86,6 +86,10 @@ Updated at the end of every session. Keep it to what the next session needs; his
   Full 144-run final-ROM capture is complete; final scene gate 85/85 and no-input tutorial gate 56/56 pass.
   Longest-real-name pause stress, boss.000 substitution, Mecci's symbols and ending centring are checked.
   Capture-only punctuation gaps have complete-page reshoot evidence in `work/qa/final_evidence`.
+- **Completion recheck (2026-11-01):** release commit `0991a23` confirmed on `origin/main`; all 43 tests,
+  all ten active QA manifests and the polish checklist pass again. Fresh cold boot passes in
+  `work/qa/completion_smoke`. The existing ZIP and standalone BPS were checked without repackaging;
+  applying the archived patch to the pinned original reproduces the final ROM hash above exactly.
 - **Next:** none for this run; the verified local release is ready for owner use. Publishing remains a separate action.
 - **Open bugs:** none known after final visual review; untested configurations are disclosed above.
 - **Waiting on the user:** nothing. (GUI keyboard check of `tools/mesen/Mesen.exe` not done: headless session; harmless.)
